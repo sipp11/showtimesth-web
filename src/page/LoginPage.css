@@ -1,0 +1,167 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-around;
+  height: 87vh;
+  width: 90vw;
+}
+
+/* Loading Icon */
+.loading-wrapper,
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loading {
+  width: 80px;
+  height: 80px;
+}
+
+.loading .background {
+  border-radius: 50%;
+  background: #6762a6;
+  border: 3px solid #c9c3e6;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  width: 80px;
+  height: 80px;
+  box-sizing: border-box;
+  animation: pulse-colors 2s infinite alternate linear;
+}
+
+.loading i {
+  margin: 25px 5px 5px 55px;
+  float: left;
+  font-size: 10em !important;
+  color: #fff;
+  animation: pulse-icon 2s infinite alternate linear;
+}
+
+@keyframes pulse-icon {
+  from {
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  }
+  to {
+    text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.55);
+  }
+}
+
+@keyframes pulse-colors {
+  from {
+    background: #c9c3e6;
+    border: 3px solid #a29ccc;
+  }
+  to {
+    background: #6762a6;
+    border: 3px solid #c9c3e6;
+  }
+}
+
+/* Button reset */
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-bottom: 20px;
+}
+
+/* Shared button styles */
+.button-wrapper {
+  height: 300px;
+}
+
+button {
+  border-radius: 50%;
+  width: 215px;
+  height: 215px;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  transition-timing-function: ease-in;
+  transition: 0.3s;
+  transform: scale(0.7);
+}
+
+button:hover {
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+button.disabled {
+  background-color: #999 !important;
+  cursor: no-drop;
+}
+
+button.disabled:hover {
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+button.disabled:hover span {
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+button span {
+  font-size: 10em !important;
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  transition: 0.3s;
+  color: #fff;
+}
+
+button:hover span {
+  text-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+  transform: rotate(-1.1deg);
+}
+
+/* Twitter */
+button.twitter {
+  border: 3px solid #ffffff;
+  background: #78c0ec;
+}
+
+button.twitter:hover {
+  background: #1da1f2;
+}
+
+/* Google */
+button.google {
+  border: 3px solid #ffffff;
+  background: #e97c72;
+}
+
+button.google:hover {
+  background: #ea4335;
+}
+
+/* Facebook */
+button.facebook {
+  border: 3px solid #ffffff;
+  background: #8b9dc3;
+}
+
+button.facebook:hover {
+  background: #3b5998;
+}
+
+/* Github */
+button.github {
+  border: 3px solid #ffffff;
+  background: #767676;
+}
+
+button.github:hover {
+  background: #6e5494;
+}
+
+/* Instagram */
+button.instagram {
+  border: 3px solid #ffffff;
+  background: #dd7dad;
+}
+
+button.instagram:hover {
+  background: #e00b76;
+}

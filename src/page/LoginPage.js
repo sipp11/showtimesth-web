@@ -1,22 +1,30 @@
 import React, { Component } from "react"
+import io from "socket.io-client"
 import { Subscribe } from "unstated"
 import BasicContainer from "../unstated/basic"
+import OAuth from "../component/OAuth"
+import { API_URL, PROVIDERS } from "../config"
+import "./LoginPage.css"
 
 class LoginPage extends Component {
+  socket = null
+
+  componentWillMount() {
+    this.socket = io(API_URL)
+  }
+
+  componentWillUnmount() {
+    if (this.socket) {
+      this.socket.close()
+    }
+  }
+
   render() {
     return (
-      <div>
-        <ul>
-          <li>
-            <a href="http://localhost:8080/auth/twitter">Twitter</a>
-          </li>
-          <li>
-            <a href="https://passport.everyday.in.th/auth/google">Google</a>
-          </li>
-          <li>
-            <a href="https://passport.everyday.in.th/auth/facebook">Facebook</a>
-          </li>
-        </ul>
+      <div className="container">
+        {PROVIDERS.map(provider => (
+          <OAuth provider={provider} key={provider} socket={this.socket} />
+        ))}
       </div>
     )
   }
