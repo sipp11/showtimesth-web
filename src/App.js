@@ -1,21 +1,38 @@
 import React from "react"
 import { Switch, Route, Link } from "react-router-dom"
+import io from "socket.io-client"
+import { API_URL } from "./config"
 import logo from "./logo.svg"
 import "./App.css"
 import LoginPage from "./page/LoginPage"
+import { Subscribe } from "unstated"
+import BasicContainer from "./unstated/basic"
+
+const socket = io(API_URL)
 
 const Blank = () => (
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
-      <Link className="App-link" to="/login">
-        Login
-      </Link>
-    </header>
-  </div>
+  <Subscribe to={[BasicContainer]}>
+    {basic => (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.js</code> and save to reload.
+          </p>
+          <Link className="App-link" to="/login">
+            Login
+          </Link>
+          <button
+            onClick={() => {
+              basic.logout()
+            }}
+          >
+            Logout
+          </button>
+        </header>
+      </div>
+    )}
+  </Subscribe>
 )
 
 const Page404 = () => (
@@ -30,37 +47,12 @@ const Page404 = () => (
   </div>
 )
 
-const handleSocialAuth = (provider, query) => {
-  // const url = `https://passport.everyday.in.th/auth/${provider}/callback${query}`
-  // console.log("url: ", url)
-  // axios
-  //   .get(url)
-  //   .then(resp => {
-  //     console.log("then:", resp)
-  //   })
-  //   .catch(function(error) {
-  //     // handle error
-  //     console.log(error)
-  //   })
-  //   .then(function() {
-  //     // always executed
-  //     console.log("then!!")
-  //   })
-}
-
 const App = () => (
   <Switch>
     <Route
-      path="/auth/:provider/callback"
-      render={props => {
-        const { provider } = props.match.params
-        const { search } = props.location
-        handleSocialAuth(provider, search)
-        return <Blank {...props} />
-        // return <Callback {...props} />
-      }}
+      path="/login"
+      component={props => <LoginPage {...props} socket={socket} />}
     />
-    <Route path="/login" component={LoginPage} />
     <Route path="/" component={Blank} />
     <Route component={Page404} />
   </Switch>

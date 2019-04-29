@@ -8,10 +8,12 @@ import UNSTATED from "unstated-debug"
 import * as serviceWorker from "./serviceWorker"
 import BasicContainer from "./unstated/basic"
 
-UNSTATED.logStateChanges = false
+UNSTATED.logStateChanges = process.env.NODE_ENV !== 'production'
 
 let basic = new BasicContainer({
-  initialToken: sessionStorage.getItem("jwtToken") || null
+  initialToken: sessionStorage.getItem("token") || null,
+  initialUsername: sessionStorage.getItem("username") || null,
+  initialRoles: sessionStorage.getItem("roles") || null
 })
 
 ReactDOM.render(

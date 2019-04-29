@@ -10,16 +10,12 @@ export default class OAuth extends Component {
   }
 
   componentDidMount() {
-    const { socket, provider } = this.props
+    const { socket, provider, basic } = this.props
 
     socket.on(provider, user => {
-      if (this.popup) this.popup.close()
       this.setState({ user })
-      console.log(user)
-      // TODO: push to unstated, then unstated would take care of sessionStorage
-      sessionStorage.setItem("jwtToken", user.token)
-      sessionStorage.setItem("username", user.username)
-      sessionStorage.setItem("roles", user.roles.join(','))
+      basic.savePassport(user)
+      if (this.popup) this.popup.close()
     })
   }
 
@@ -39,12 +35,11 @@ export default class OAuth extends Component {
       height = 600
     const left = window.innerWidth / 2 - width / 2
     const top = window.innerHeight / 2 - height / 2
-    const url = `${API_URL}/auth/${provider}?socketId=${
-      socket.id
-    }&provider=${provider}`
+    const url = `${API_URL}/auth/${provider}`
+    const query = `?socketId=${socket.id}&provider=${provider}`
 
     return window.open(
-      url,
+      `${url}${query}`,
       "",
       `toolbar=no, location=no, directories=no, status=no, menubar=no,
       scrollbars=no, resizable=no, copyhistory=no, width=${width},
