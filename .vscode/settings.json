@@ -1,0 +1,11 @@
+{
+  "todo-tree.flat": false,
+  "todo-tree.grouped": false,
+  "todo-tree.expanded": true,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#ff9533",
+    "activityBar.background": "#5c3007",
+    "titleBar.activeForeground": "#000000"
+  },
+  "prettier.semi": false
+}

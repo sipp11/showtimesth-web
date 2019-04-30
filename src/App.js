@@ -19,16 +19,20 @@ const Blank = () => (
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
-          <Link className="App-link" to="/login">
-            Login
-          </Link>
-          <button
-            onClick={() => {
-              basic.logout()
-            }}
-          >
-            Logout
-          </button>
+          {!basic.state.token && (
+            <Link className="App-link" to="/login">
+              Login
+            </Link>
+          )}
+          {basic.state.token && (
+            <button
+              onClick={() => {
+                basic.logout()
+              }}
+            >
+              Logout
+            </button>
+          )}
         </header>
       </div>
     )}

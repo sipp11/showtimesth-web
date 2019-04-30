@@ -5,10 +5,15 @@ import "./index.css"
 import App from "./App"
 import { Provider as UNSTATEDProvider } from "unstated"
 import UNSTATED from "unstated-debug"
+import { ApolloClient } from "apollo-client"
+import { setContext } from "apollo-link-context"
+import { InMemoryCache } from "apollo-cache-inmemory"
+import { createUploadLink } from "apollo-upload-client"
+import { ApolloProvider } from "react-apollo"
 import * as serviceWorker from "./serviceWorker"
 import BasicContainer from "./unstated/basic"
 
-UNSTATED.logStateChanges = process.env.NODE_ENV !== 'production'
+UNSTATED.logStateChanges = process.env.NODE_ENV !== "production"
 
 let basic = new BasicContainer({
   initialToken: sessionStorage.getItem("token") || null,
@@ -16,11 +21,36 @@ let basic = new BasicContainer({
   initialRoles: sessionStorage.getItem("roles") || null
 })
 
+const uploadLink = createUploadLink({
+  uri: process.env.REACT_APP_GRAPHQL_URI
+  // credentials: "include"
+})
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = sessionStorage.getItem("token")
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ""
+    }
+  }
+})
+
+export const client = new ApolloClient({
+  link: authLink.concat(uploadLink),
+  cache: new InMemoryCache(),
+  credentials: "include"
+})
+
 ReactDOM.render(
   <UNSTATEDProvider inject={[basic]}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ApolloProvider>
   </UNSTATEDProvider>,
   document.getElementById("root")
 )

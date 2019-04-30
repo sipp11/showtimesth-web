@@ -4,7 +4,13 @@
   "versionDate": "2019-04-29",
   "private": true,
   "dependencies": {
+    "apollo-cache-inmemory": "^1.5.1",
+    "apollo-client": "^2.5.1",
+    "apollo-link-context": "^1.0.17",
+    "apollo-upload-client": "^10.0.0",
+    "graphql": "^14.2.1",
     "react": "^16.8.6",
+    "react-apollo": "^2.5.5",
     "react-dom": "^16.8.6",
     "react-fontawesome": "^1.6.1",
     "react-router-dom": "^5.0.0",
