@@ -1,0 +1,15 @@
+.navbar-menu {
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-end {
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  height: 100%;
+}
+
+.navbar-item {
+  height: 100%;
+}

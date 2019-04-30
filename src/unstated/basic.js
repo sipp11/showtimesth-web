@@ -29,6 +29,7 @@ class BasicContainer extends Container {
       username: null,
       roles: null
     })
+    sessionStorage.clear()
   }
 }
 

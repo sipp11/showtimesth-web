@@ -1,12 +1,13 @@
 import React from "react"
 import { Switch, Route, Link } from "react-router-dom"
 import io from "socket.io-client"
+import { Subscribe } from "unstated"
 import { API_URL } from "./config"
 import logo from "./logo.svg"
 import "./App.css"
 import LoginPage from "./page/LoginPage"
-import { Subscribe } from "unstated"
 import BasicContainer from "./unstated/basic"
+import AppPage from "./page/AppPage"
 
 const socket = io(API_URL)
 
@@ -57,7 +58,7 @@ const App = () => (
       path="/login"
       component={props => <LoginPage {...props} socket={socket} />}
     />
-    <Route path="/" component={Blank} />
+    <Route path="/" component={AppPage} />
     <Route component={Page404} />
   </Switch>
 )
