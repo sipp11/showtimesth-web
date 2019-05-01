@@ -2,6 +2,7 @@ import React from "react"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import fecha from "fecha"
+import { imgSrc } from "../../utils/posterImage"
 
 const NOWSHOWING_MOVIES = gql`
   query NOWSHOWING_MOVIES($day: date!) {
@@ -13,6 +14,7 @@ const NOWSHOWING_MOVIES = gql`
       images(limit: 2, order_by: { order: desc }) {
         location
         source
+        type
         url
       }
     }
@@ -30,7 +32,10 @@ const NowShowingMovies = () => (
       return (
         <>
           {data.nowshowing_movies.map(ele => (
-            <div>{ele.title}</div>
+            <div>
+              <img src={imgSrc(ele.images)} width="95" />
+              {ele.title}
+            </div>
           ))}
         </>
       )

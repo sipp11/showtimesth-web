@@ -29,7 +29,6 @@ const uploadLink = createUploadLink({
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = sessionStorage.getItem("token")
-  console.log("authLink:", token || "n/a")
   // return the headers to the context so httpLink can read them
   if (!token) return headers
   return {

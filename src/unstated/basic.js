@@ -1,4 +1,5 @@
 import { Container } from "unstated"
+import jwtDecode from "jwt-decode"
 
 class BasicContainer extends Container {
   constructor(props = {}) {
@@ -21,6 +22,12 @@ class BasicContainer extends Container {
   saveToken = token => {
     sessionStorage.setItem("token", token)
     this.setState({ token })
+  }
+
+  getUserId = () => {
+    if (!this.state.token) return false
+    const decoded = jwtDecode(this.state.token)
+    return decoded["https://hasura.io/jwt/claims"]["x-hasura-user-id"]
   }
 
   logout = () => {

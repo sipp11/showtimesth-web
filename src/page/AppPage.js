@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import NowShowing from "../component/MovieNowShowing"
+import NowShowing from "../component/movie/Nowshowing"
 import Navbar from "../component/Navbar"
 
 class AppPage extends Component {

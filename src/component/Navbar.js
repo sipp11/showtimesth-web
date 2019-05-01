@@ -1,65 +1,91 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import FontAwesome from "react-fontawesome"
+import styled from "styled-components"
 import { Subscribe } from "unstated"
 import BasicContainer from "../unstated/basic"
 import "./Navbar.css"
 
+const Nav = styled.nav`
+  min-height: auto;
+  background-color: #35e8df !important;
+  color: #333333 !important;
+
+  a {
+    color: #3b3b3b !important;
+  }
+  a:hover {
+    color: #000000 !important;
+    transform: rotate(-1.1deg);
+    transform: scale(1.1);
+  }
+`
+
+const Box = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
+  align-content: center;
+  height: 100%;
+`
+
+const BoxItem = styled.div`
+  flex: 1;
+  text-align: center;
+  height: 100%;
+
+  a:hover {
+    background-color: #6ffaf3 !important;
+    color: #3b3b3b !important;
+  }
+`
+
 const Navbar = props => (
-  <nav
+  <Nav
     className="navbar is-primary is-fixed-bottom"
     role="navigation"
     aria-label="main navigation"
   >
-    <div className={`navbar-menu ${props.ui ? "is-active" : ""}`}>
-      <div className="navbar-end">
+    <Box>
+      <BoxItem>
         <Link to="/" className="navbar-item">
           Home
         </Link>
-        {/* <Link to="/help" className="navbar-item">
-          ช่วยเหลือ
-        </Link> */}
-        {!props.basic.state.token && (
-          <Link to="/login" className="navbar-item">
-            Login
-          </Link>
-        )}
-        {props.basic.state.token && (
-        <Link to="/user" className="navbar-item">
-          <FontAwesome name={"user"} />
-          &nbsp;Profile
-        </Link>
-        )}
-        <div className="navbar-item">
-          <div className="buttons">
-            {/* <User>
-              {({ data: { me } }) => {
-                if (!me)
-                  return (
-                    <>
-                      <Link to="/signup" className="button is-primary">
-                        <strong>Sign up</strong>
-                      </Link>
-                      <Link to="/signup" className="button is-light">
-                        Log in
-                      </Link>
-                    </>
-                  )
-                return (
-                  <>
-                    <Link to="/me" className="button is-primary is-large">
-                      {me.first_name} {me.last_name}
-                    </Link>
-                    <Signout label="ออกจากระบบ" />
-                  </>
-                )
-              }}
-            </User> */}
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+      </BoxItem>
+      {!props.basic.state.token && (
+        <>
+          <BoxItem>
+            <Link to="/login" className="navbar-item">
+              Login
+            </Link>
+          </BoxItem>
+
+          <BoxItem>
+            <Link to="/share" className="navbar-item">
+              <FontAwesome name={"share"} />
+              &nbsp;Share
+            </Link>
+          </BoxItem>
+        </>
+      )}
+      {props.basic.state.token && (
+        <>
+          <BoxItem>
+            <Link to="/fav" className="navbar-item">
+              <FontAwesome name={"heart"} />
+              &nbsp;Fav
+            </Link>
+          </BoxItem>
+          <BoxItem>
+            <Link to="/user" className="navbar-item">
+              <FontAwesome name={"user"} />
+              &nbsp;{props.basic.state.username}
+            </Link>
+          </BoxItem>
+        </>
+      )}
+    </Box>
+  </Nav>
 )
 
 export default props => {
