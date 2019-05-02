@@ -2,9 +2,10 @@ import React from "react"
 import { Link } from "react-router-dom"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
-import styled from "styled-components"
 import { Subscribe } from "unstated"
 import BasicContainer from "../../unstated/basic"
+import { ListItem } from "../../lib/piece"
+import Loading from "../Loading"
 
 const FAV_MOVIES = gql`
   query FAV_MOVIES($userId: Int) {
@@ -23,38 +24,16 @@ const FAV_MOVIES = gql`
   }
 `
 
-const Item = styled.div`
-  background-color: #fff;
-  border-bottom: 1px solid rgba(10, 10, 10, 0.1);
-  color: #4a4a4a;
-  display: block;
-  padding: 0.75rem;
-  /* margin-bottom: 0.5rem; */
-
-  :hover {
-    @keyframes pulse-colors {
-      from {
-        background: #ffffff;
-      }
-      to {
-        background: #fd6390;
-      }
-    }
-
-    animation: pulse-colors 1s infinite alternate linear;
-  }
-`
-
 const FavTheater = props => (
   <Query query={FAV_MOVIES} variables={{ userId: props.basic.getUserId() }}>
     {({ loading, error, data }) => {
-      if (loading) return <div>Loading...</div>
+      if (loading) return <Loading />
       if (!data || !data.people_favtheater) return <div>No data yet</div>
       return (
         <>
           {data.people_favtheater.map(ele => (
             <Link to={`/t/${ele.theater.id}`}>
-              <Item>
+              <ListItem>
                 <article>
                   <div className="content">
                     <p>
@@ -73,7 +52,7 @@ const FavTheater = props => (
                   </div>
                 </nav> */}
                 </article>
-              </Item>
+              </ListItem>
             </Link>
           ))}
         </>

@@ -4,6 +4,8 @@ import FontAwesome from "react-fontawesome"
 import { API_URL } from "../config"
 
 export default class OAuth extends Component {
+  popup = null
+  check = null
   state = {
     user: {},
     disabled: ""
@@ -15,13 +17,21 @@ export default class OAuth extends Component {
     socket.on(provider, user => {
       this.setState({ user })
       basic.savePassport(user)
-      if (this.popup) this.popup.close()
+      const { popup } = this
+      if (popup && !popup.closed) {
+        this.popup.close()
+        this.popup = null
+      }
     })
+  }
+  componentWillUnmount() {
+    const { check } = this
+    if (check) clearInterval(check)
   }
 
   checkPopup() {
-    const check = setInterval(() => {
-      const { popup } = this
+    this.check = setInterval(() => {
+      const { popup, check } = this
       if (!popup || popup.closed || popup.closed === undefined) {
         clearInterval(check)
         this.setState({ disabled: "" })
@@ -31,8 +41,8 @@ export default class OAuth extends Component {
 
   openPopup() {
     const { provider, socket } = this.props
-    const width = 600,
-      height = 600
+    const width = 640,
+      height = 480
     const left = window.innerWidth / 2 - width / 2
     const top = window.innerHeight / 2 - height / 2
     const url = `${API_URL}/auth/${provider}`
@@ -60,33 +70,17 @@ export default class OAuth extends Component {
   }
 
   render() {
-    const { name, photo } = this.state.user
     const { provider } = this.props
     const { disabled } = this.state
-    const atSymbol = provider === "twitter" ? "@" : ""
 
     return (
-      <div>
-        {name ? (
-          <div className="card">
-            <img src={photo} alt={name} />
-            <FontAwesome
-              name="times-circle"
-              className="close"
-              onClick={this.closeCard}
-            />
-            <h4>{`${atSymbol}${name}`}</h4>
-          </div>
-        ) : (
-          <div className="button-wrapper fadein-fast">
-            <button
-              onClick={this.startAuth}
-              className={`${provider} ${disabled} button`}
-            >
-              <FontAwesome name={provider} />
-            </button>
-          </div>
-        )}
+      <div className="button-wrapper fadein-fast">
+        <button
+          onClick={this.startAuth}
+          className={`${provider} ${disabled} button`}
+        >
+          <FontAwesome name={provider} />
+        </button>
       </div>
     )
   }

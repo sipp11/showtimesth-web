@@ -30,13 +30,14 @@ class BasicContainer extends Container {
     return decoded["https://hasura.io/jwt/claims"]["x-hasura-user-id"]
   }
 
-  logout = () => {
+  logout = client => {
     this.setState({
       token: null,
       username: null,
       roles: null
     })
     sessionStorage.clear()
+    if (client) client.resetStore()
   }
 }
 

@@ -1,11 +1,7 @@
 import React, { Component } from "react"
-import styled from "styled-components"
 import Navbar from "../component/Navbar"
 import One from "../component/theater/One"
-
-const PageContainer = styled.div`
-  padding-bottom: 80px;
-`
+import { PageContainer } from "../lib/piece"
 
 class TheaterPage extends Component {
   render() {

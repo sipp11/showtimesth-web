@@ -1,16 +1,47 @@
 import React from "react"
-import { Query } from "react-apollo"
+import { Query, Mutation } from "react-apollo"
 import gql from "graphql-tag"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import { Subscribe } from "unstated"
 import fecha from "fecha"
+import Loading from "../Loading"
 import BasicContainer from "../../unstated/basic"
-import { imgSrc } from "../../utils/posterImage"
-import { getYear } from "../../utils/dt"
+import { imgSrc } from "../../lib/posterImage"
+import { getYear } from "../../lib/dt"
+import { DimBox, BrightBox, Breadcrum } from "../../lib/piece"
+
+const THEATER_ADD_FAV = gql`
+  mutation THEATER_ADD_FAV($tId: Int!, $userId: Int!) {
+    insert_people_favtheater(
+      objects: { theater_id: $tId, user_id: $userId, notify_update: false }
+      on_conflict: {
+        constraint: people_favtheater_pkey
+        update_columns: theater_id
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const THEATER_UN_FAV = gql`
+  mutation THEATER_UN_FAV($id: Int!) {
+    delete_people_favtheater(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`
 
 const THEATER = gql`
-  query THEATER($id: Int!, $day: date) {
+  query THEATER($id: Int!, $day: date, $userId: Int) {
+    people_favtheater(
+      where: { _and: { user_id: { _eq: $userId }, theater_id: { _eq: $id } } }
+    ) {
+      id
+      user_id
+      theater_id
+    }
     theater_theater(where: { id: { _eq: $id } }) {
       english
       thai
@@ -56,15 +87,6 @@ const THEATER = gql`
   }
 `
 
-const Item = styled.div`
-  background-color: #fff;
-  border-bottom: 1px solid rgba(10, 10, 10, 0.1);
-  color: #4a4a4a;
-  display: block;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-`
-
 const FigImage = styled.figure`
   display: block;
   position: relative;
@@ -86,12 +108,12 @@ const Desc = styled.div`
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
-  color: #6a6a6a;
+  color: #cbd3dd;
 `
 
 const ScreenBox = styled.div`
   display: flex;
-  border-bottom: 1px #ccc solid;
+  border-bottom: 1px #1f2f42 solid;
 
   div {
     padding: 0.5rem;
@@ -111,43 +133,88 @@ const ScreenInfo = styled.div`
 `
 const ScreenTime = styled.div`
   flex: 1;
-  border-left: 1px #ccc solid;
+  border-left: 1px #1f2f42 solid;
   font-family: Menlo, Monaco, "Courier New", monospace;
 
   @media screen and (max-width: 450px) {
-    border-left: 2px #ccc solid;
+    border-left: 2px #1f2f42 solid;
   }
 `
 
-const Hero = styled.section`
-  align-items: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+const UnFav = props => (
+  <Mutation
+    mutation={THEATER_UN_FAV}
+    refetchQueries={[
+      {
+        query: THEATER,
+        variables: {
+          id: props.tId,
+          userId: props.userId,
+          day: fecha.format(new Date(), "YYYY-MM-DD")
+        }
+      }
+    ]}
+  >
+    {(unFavTheater, { data }) => (
+      <span
+        className={`tag ${props.isFav ? "is-danger" : "is-white"}`}
+        onClick={() => {
+          unFavTheater({ variables: { id: props.favData[0].id } })
+        }}
+      >
+        <FontAwesome name="heart" />
+        &nbsp;UnFav {props.favCount}
+      </span>
+    )}
+  </Mutation>
+)
 
-  padding: 1rem 0.8rem;
-  background-color: #f5f5f5;
-  color: rgba(54, 54, 54, 0.9);
+const ToFav = props => (
+  <Mutation
+    mutation={THEATER_ADD_FAV}
+    refetchQueries={[
+      {
+        query: THEATER,
+        variables: {
+          id: props.tId,
+          userId: props.userId,
+          day: fecha.format(new Date(), "YYYY-MM-DD")
+        }
+      }
+    ]}
+  >
+    {(addFavTheater, { data }) => (
+      <span
+        className={`tag ${props.isFav ? "is-danger" : "is-white"}`}
+        onClick={() => {
+          addFavTheater({ variables: { tId: props.tId, userId: props.userId } })
+        }}
+      >
+        <FontAwesome name="heart" />
+        &nbsp;Fav {props.favCount}
+      </span>
+    )}
+  </Mutation>
+)
 
-  h1.title {
-    color: rgba(54, 54, 54, 0.9);
-    font-size: 1.7rem;
-  }
-  span.desc {
-    font-size: 0.9rem;
-  }
-`
+const FavController = props => (
+  <>
+    {!props.isFav && <ToFav {...props} />}
+    {props.isFav && <UnFav {...props} />}
+  </>
+)
 
 const Theater = props => (
   <Query
     query={THEATER}
     variables={{
       id: props.id,
-      day: fecha.format(new Date(), "YYYY-MM-DD")
+      day: fecha.format(new Date(), "YYYY-MM-DD"),
+      userId: props.basic.getUserId() || -1
     }}
   >
     {({ loading, error, data }) => {
-      if (loading) return <div>Loading...</div>
+      if (loading) return <Loading />
       if (!data || !data.theater_theater) return <div>No data yet</div>
 
       const {
@@ -156,7 +223,10 @@ const Theater = props => (
         tel,
         location,
         showtimes,
-        chain
+        chain,
+        favs_aggregate: {
+          aggregate: { count }
+        }
       } = data.theater_theater[0]
       let m = {}
       showtimes.map(ele => {
@@ -165,11 +235,13 @@ const Theater = props => (
         }
         m[ele.movie.id].push(ele)
       })
+
+      const isFav = data.people_favtheater.length > 0
+
       return (
         <>
-          <nav
-            class="breadcrumb has-bullet-separator is-centered"
-            style={{ fontSize: "0.8rem", marginBottom: 0 }}
+          <Breadcrum
+            className="breadcrumb has-bullet-separator is-centered"
             aria-label="breadcrumbs"
           >
             <ul>
@@ -182,9 +254,9 @@ const Theater = props => (
                 </a>
               </li>
             </ul>
-          </nav>
-          <Hero>
-            <h2 class="title">{thai}</h2>
+          </Breadcrum>
+          <BrightBox>
+            <h1>{thai}</h1>
             <Desc>
               {tel && (
                 <span>
@@ -197,11 +269,21 @@ const Theater = props => (
                 </span>
               )}
             </Desc>
-          </Hero>
+            <FavController
+              isFav={isFav}
+              favCount={count}
+              favData={data.people_favtheater}
+              tId={props.id}
+              userId={props.basic.getUserId()}
+            />
+          </BrightBox>
 
-          {!showtimes && <p>ยังไม่มีข้อมูลรอบหนัง</p>}
+          {showtimes.length === 0 && (
+            <DimBox center={true}>ยังไม่มีข้อมูลรอบหนัง</DimBox>
+          )}
+
           {Object.keys(m).map(key => (
-            <Item>
+            <DimBox>
               <article className="media">
                 <div className="media-left">
                   <FigImage>
@@ -217,10 +299,14 @@ const Theater = props => (
                     <div>
                       <strong>
                         {m[key][0].movie.title}{" "}
-                        <muted>({getYear(m[key][0].movie.release_date)})</muted>
+                        <span className="muted">
+                          ({getYear(m[key][0].movie.release_date)})
+                        </span>
                       </strong>
                       <br />
-                      <small>{m[key][0].movie.duration} min</small>
+                      <small className="muted">
+                        {m[key][0].movie.duration} min
+                      </small>
                     </div>
                     {m[key].map(ele => (
                       <ScreenBox>
@@ -236,10 +322,10 @@ const Theater = props => (
                             </>
                           )}
                           {ele.screen && (
-                            <>
+                            <muted>
                               <br />
                               <FontAwesome name={"ticket"} /> {ele.screen}{" "}
-                            </>
+                            </muted>
                           )}
                         </ScreenInfo>
                         <ScreenTime>
@@ -252,7 +338,7 @@ const Theater = props => (
                   </div>
                 </div>
               </article>
-            </Item>
+            </DimBox>
           ))}
         </>
       )

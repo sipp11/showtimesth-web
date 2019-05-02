@@ -1,12 +1,3 @@
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  justify-content: space-around;
-  height: 87vh;
-  width: 90vw;
-}
-
 /* Loading Icon */
 .loading-wrapper,
 .loading {
@@ -22,7 +13,7 @@
 }
 
 .loading .background {
-  border-radius: 50%;
+  border-radius: 50% !important;
   background: #6762a6;
   border: 3px solid #c9c3e6;
   box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
@@ -69,18 +60,18 @@ button {
   font: inherit;
   cursor: pointer;
   outline: inherit;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* Shared button styles */
 .button-wrapper {
-  height: 300px;
+  height: 7.5rem;
 }
 
 button {
-  border-radius: 50%;
-  width: 215px;
-  height: 215px;
+  border-radius: 50% !important;
+  width: 125px !important;
+  height: 125px !important;
   box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
   transition-timing-function: ease-in;
   transition: 0.3s;
@@ -105,7 +96,7 @@ button.disabled:hover span {
 }
 
 button span {
-  font-size: 10em !important;
+  font-size: 5em !important;
   text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
   transition: 0.3s;
   color: #fff;

@@ -17,7 +17,8 @@ const Nav = styled.nav`
   a:hover {
     color: #000000 !important;
     transform: rotate(-1.1deg);
-    transform: scale(1.1);
+    transform: scale(1.2);
+    border-radius: 0.2rem;
   }
 `
 
@@ -77,7 +78,7 @@ const Navbar = props => (
             </Link>
           </BoxItem>
           <BoxItem>
-            <Link to="/user" className="navbar-item">
+            <Link to="/me" className="navbar-item">
               <FontAwesome name={"user"} />
               &nbsp;{props.basic.state.username}
             </Link>
