@@ -22,7 +22,7 @@ const PROFILE = gql`
 const UserProfile = props => (
   <Query query={PROFILE} variables={{ userId: props.basic.getUserId() }}>
     {({ client, loading, error, data }) => {
-      console.log(loading, error, data)
+      // console.log(loading, error, data)
       if (loading) return <div>Loading...</div>
       if (!data || data.auth_user.length === 0) return <div>No data yet</div>
       const user = data.auth_user[0]

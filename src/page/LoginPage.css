@@ -52,7 +52,7 @@
 }
 
 /* Button reset */
-button {
+.login-page button {
   background: none;
   color: inherit;
   border: none;
@@ -68,7 +68,7 @@ button {
   height: 7.5rem;
 }
 
-button {
+.login-page button {
   border-radius: 50% !important;
   width: 125px !important;
   height: 125px !important;
@@ -78,81 +78,81 @@ button {
   transform: scale(0.7);
 }
 
-button:hover {
+.login-page button:hover {
   box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
-button.disabled {
+.login-page button.disabled {
   background-color: #999 !important;
   cursor: no-drop;
 }
 
-button.disabled:hover {
+.login-page button.disabled:hover {
   box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
 }
 
-button.disabled:hover span {
+.login-page button.disabled:hover span {
   text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
 }
 
-button span {
+.login-page button span {
   font-size: 5em !important;
   text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
   transition: 0.3s;
   color: #fff;
 }
 
-button:hover span {
+.login-page button:hover span {
   text-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
   transform: rotate(-1.1deg);
 }
 
 /* Twitter */
-button.twitter {
+.login-page button.twitter {
   border: 3px solid #ffffff;
   background: #78c0ec;
 }
 
-button.twitter:hover {
+.login-page button.twitter:hover {
   background: #1da1f2;
 }
 
 /* Google */
-button.google {
+.login-page button.google {
   border: 3px solid #ffffff;
   background: #e97c72;
 }
 
-button.google:hover {
+.login-page button.google:hover {
   background: #ea4335;
 }
 
 /* Facebook */
-button.facebook {
+.login-page button.facebook {
   border: 3px solid #ffffff;
   background: #8b9dc3;
 }
 
-button.facebook:hover {
+.login-page button.facebook:hover {
   background: #3b5998;
 }
 
 /* Github */
-button.github {
+.login-page button.github {
   border: 3px solid #ffffff;
   background: #767676;
 }
 
-button.github:hover {
+.login-page button.github:hover {
   background: #6e5494;
 }
 
 /* Instagram */
-button.instagram {
+.login-page button.instagram {
   border: 3px solid #ffffff;
   background: #dd7dad;
 }
 
-button.instagram:hover {
+.login-page button.instagram:hover {
   background: #e00b76;
 }

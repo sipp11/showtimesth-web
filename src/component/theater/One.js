@@ -3,6 +3,7 @@ import { Query, Mutation } from "react-apollo"
 import gql from "graphql-tag"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
+import { Link } from "react-router-dom"
 import { Subscribe } from "unstated"
 import fecha from "fecha"
 import Loading from "../Loading"
@@ -12,9 +13,9 @@ import { getYear } from "../../lib/dt"
 import { DimBox, BrightBox, Breadcrum } from "../../lib/piece"
 
 const THEATER_ADD_FAV = gql`
-  mutation THEATER_ADD_FAV($tId: Int!, $userId: Int!) {
+  mutation THEATER_ADD_FAV($tId: Int!) {
     insert_people_favtheater(
-      objects: { theater_id: $tId, user_id: $userId, notify_update: false }
+      objects: { theater_id: $tId }
       on_conflict: {
         constraint: people_favtheater_pkey
         update_columns: theater_id
@@ -113,6 +114,7 @@ const Desc = styled.div`
 
 const ScreenBox = styled.div`
   display: flex;
+  overflow: hidden;
   border-bottom: 1px #1f2f42 solid;
 
   div {
@@ -133,8 +135,15 @@ const ScreenInfo = styled.div`
 `
 const ScreenTime = styled.div`
   flex: 1;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
   border-left: 1px #1f2f42 solid;
   font-family: Menlo, Monaco, "Courier New", monospace;
+
+  span {
+    width: 4rem;
+  }
 
   @media screen and (max-width: 450px) {
     border-left: 2px #1f2f42 solid;
@@ -187,7 +196,7 @@ const ToFav = props => (
       <span
         className={`tag ${props.isFav ? "is-danger" : "is-white"}`}
         onClick={() => {
-          addFavTheater({ variables: { tId: props.tId, userId: props.userId } })
+          addFavTheater({ variables: { tId: props.tId } })
         }}
       >
         <FontAwesome name="heart" />
@@ -234,6 +243,7 @@ const Theater = props => (
           m[ele.movie.id] = []
         }
         m[ele.movie.id].push(ele)
+        return null
       })
 
       const isFav = data.people_favtheater.length > 0
@@ -248,7 +258,7 @@ const Theater = props => (
               <li>
                 <a href="#">{chain.english}</a>
               </li>
-              <li class="is-active">
+              <li className="is-active">
                 <a href="#" aria-current="page">
                   {english}
                 </a>
@@ -286,13 +296,15 @@ const Theater = props => (
             <DimBox>
               <article className="media">
                 <div className="media-left">
-                  <FigImage>
-                    <img
-                      src={imgSrc(m[key][0].movie.images)}
-                      width="35"
-                      height="70"
-                    />
-                  </FigImage>
+                  <Link to={`/m/${m[key][0].movie.id}`}>
+                    <FigImage>
+                      <img
+                        src={imgSrc(m[key][0].movie.images)}
+                        width="35"
+                        height="70"
+                      />
+                    </FigImage>
+                  </Link>
                 </div>
                 <div className="media-content">
                   <div className="content">
@@ -322,10 +334,10 @@ const Theater = props => (
                             </>
                           )}
                           {ele.screen && (
-                            <muted>
+                            <span className="muted">
                               <br />
                               <FontAwesome name={"ticket"} /> {ele.screen}{" "}
-                            </muted>
+                            </span>
                           )}
                         </ScreenInfo>
                         <ScreenTime>

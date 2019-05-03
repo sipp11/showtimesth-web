@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import { Link } from "react-router-dom"
 import { imgSrc } from "../../lib/posterImage"
 
 const Item = styled.div`
@@ -12,10 +13,12 @@ const Item = styled.div`
 `
 
 const PosterItem = props => (
-  <Item>
-    <img src={imgSrc(props.images)} width="95" />
-    {props.show && props.value}
-  </Item>
+  <Link to={`/m/${props.id}`}>
+    <Item>
+      <img src={imgSrc(props.images)} width="95" alt={`${props.title}`} />
+      {props.show && props.value}
+    </Item>
+  </Link>
 )
 
 export default PosterItem

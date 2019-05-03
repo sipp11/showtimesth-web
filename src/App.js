@@ -10,6 +10,7 @@ import BasicContainer from "./unstated/basic"
 import AppPage from "./page/AppPage"
 import FavPage from "./page/FavPage"
 import TheaterPage from "./page/TheaterPage"
+import MoviePage from "./page/MoviePage"
 import UserPage from "./page/UserPage"
 
 const socket = io(API_URL)
@@ -61,8 +62,13 @@ const App = () => (
       path="/login"
       component={props => <LoginPage {...props} socket={socket} />}
     />
+    <Route
+      path="/t/:id/:slug"
+      component={props => <TheaterPage {...props} />}
+    />
     <Route path="/t/:id" component={props => <TheaterPage {...props} />} />
     <Route path="/t" component={TheaterPage} />
+    <Route path="/m/:id" component={MoviePage} />
     <Route path="/fav" component={FavPage} />
     <Route path="/me" component={UserPage} />
     <Route path="/:page" component={AppPage} />

@@ -22,8 +22,8 @@ export const PageContainer = styled.div`
 export const BrightBox = styled.div`
   background-color: #3e6189;
   border-radius: 0.2rem;
-  margin-bottom: 0.5rem;
-
+  margin-bottom: ${props =>
+    props.marginBottom !== undefined ? props.marginBottom : "0.5rem"};
   padding: 0.5rem 1rem;
   color: #cbd3dd;
 `
@@ -35,8 +35,9 @@ export const DimBox = styled.div`
   padding: 0.5rem 1rem;
   color: #e3e3e3;
 
-  margin-bottom: 0.5rem;
-  text-align: ${props => (props.center ? "center" : "right")};
+  margin-bottom: ${props =>
+    props.marginBottom !== undefined ? props.marginBottom : "0.5rem"};
+  text-align: ${props => (props.center ? "center" : "left")};
 
   strong {
     color: #ebf1fd;

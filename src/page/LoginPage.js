@@ -38,7 +38,7 @@ class LoginPage extends Component {
       <PageContainer>
         <Navbar />
         <h1>Login</h1>
-        <Box>
+        <Box className="login-page">
           {PROVIDERS.map(provider => (
             <OAuth
               provider={provider}

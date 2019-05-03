@@ -3,13 +3,18 @@
   "name": "ShowtimesTH - one app to rule all about movies",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "https://showtimes.everyday.in.th/static/favicon/favicon-96x96.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "https://showtimes.everyday.in.th/static/favicon/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
+  "start_url": "/utm_source=a2hs",
+  "display": "fullscreen",
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "orientation": "portrait-primary"

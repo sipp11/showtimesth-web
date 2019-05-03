@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import fecha from "fecha"
 import styled from "styled-components"
 import PosterItem from "./PosterItem"
-import Loading from '../Loading'
+import Loading from "../Loading"
 import { getWeek } from "../../lib/dt"
 
 const COMINGSOON_MOVIES = gql`
@@ -45,8 +45,8 @@ const PosterBox = styled.div`
 `
 
 const weekWord = wk => {
+  if (wk === 0) return "This week"
   if (wk === 1) return "Next week"
-
   return `Next ${wk} weeks`
 }
 
@@ -66,17 +66,23 @@ const ComingSoon = () => (
         if (!coll[wk]) coll[wk] = []
 
         coll[wk].push(ele)
+        return null
       })
 
       return (
         <WeeklyBox>
           {Object.keys(coll).map(wk => {
             return (
-              <div>
+              <div key={`wk-${wk}`}>
                 <h1>{weekWord(wk - thisWeek)}</h1>
                 <PosterBox>
                   {coll[wk].map(ele => (
-                    <PosterItem {...ele} show={true} value={ele.release_date} />
+                    <PosterItem
+                      key={`p-${ele.id}`}
+                      {...ele}
+                      show={true}
+                      value={ele.release_date}
+                    />
                   ))}
                 </PosterBox>
               </div>

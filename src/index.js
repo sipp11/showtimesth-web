@@ -12,6 +12,7 @@ import { createUploadLink } from "apollo-upload-client"
 import { ApolloProvider } from "react-apollo"
 import * as serviceWorker from "./serviceWorker"
 import BasicContainer from "./unstated/basic"
+import { getUserId, getUserRole } from "./lib/jwt"
 
 UNSTATED.logStateChanges = process.env.NODE_ENV !== "production"
 
@@ -31,10 +32,14 @@ const authLink = setContext((_, { headers }) => {
   const token = sessionStorage.getItem("token")
   // return the headers to the context so httpLink can read them
   if (!token) return headers
+  // supported roles: user, mod // God has no power here!
+  const role = getUserRole(token)
   return {
     headers: {
       ...headers,
-      Authorization: token ? `Bearer ${token}` : ""
+      Authorization: token ? `Bearer ${token}` : "",
+      "X-Hasura-User-Id": getUserId(token),
+      "X-Hasura-Role": role === "user" ? "user" : "mod"
     }
   }
 })
