@@ -40,7 +40,7 @@ const NowShowingMovies = () => (
       return (
         <PosterBox>
           {data.nowshowing_movies.map(ele => (
-            <PosterItem {...ele} />
+            <PosterItem key={`p-${ele.id}`} {...ele} />
           ))}
         </PosterBox>
       )

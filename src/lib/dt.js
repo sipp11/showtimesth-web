@@ -12,3 +12,11 @@ export const getYear = day => {
 export const getWeek = day => {
   return new Date(day).getWeek()
 }
+
+export const getNow = () => {
+  return fecha.format(new Date(), "YYYY-MM-DDTHH:mm:ssZZ")
+}
+
+export const getToday = () => {
+  return fecha.format(new Date(), "YYYY-MM-DD")
+}

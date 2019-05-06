@@ -1,5 +1,9 @@
 import styled from "styled-components"
 
+export const ifttt = (cond, yes, no) => {
+  return cond ? yes : no
+}
+
 export const PageContainer = styled.div`
   padding-bottom: 80px;
   background-color: #282c34;

@@ -51,17 +51,51 @@ const MOVIE_QUERY = gql`
   }
 `
 
+const MOVIE_SEARCH = gql`
+  query MOVIE_SEARCH($pattern: String!, $offset: Int!) {
+    theater_search(args: { _pattern: $pattern }, offset: $offset) {
+      id
+      title
+      release_date
+      tags
+      votes_aggregate {
+        aggregate {
+          avg {
+            points
+          }
+          count
+        }
+      }
+      favs {
+        id
+        watched
+        star
+        user_id
+      }
+    }
+  }
+`
+
+const movieSearch = ({ variables, render }) => (
+  <Query query={MOVIE_SEARCH} variables={variables}>
+    {result => render({ result })}
+  </Query>
+)
+
 const MOVIE_ADD_FAV = gql`
   mutation MOVIE_ADD_FAV(
     $movieId: Int!
-    $star: bool
-    $starredSince: date
-    $watched: bool
-    $watchedSince: date
+    $star: Boolean
+    $starredSince: timestamptz
+    $watched: Boolean
+    $watchedSince: timestamptz
   ) {
     insert_people_favmovie(
       objects: {
         movie_id: $movieId
+        notify_update: false
+        remind_first_week: false
+        remind_last_chance: false
         star: $star
         starred_since: $starredSince
         watched: $watched
@@ -78,15 +112,27 @@ const MOVIE_ADD_FAV = gql`
 `
 
 const addFav = ({ variables, render }) => (
-  <Mutation mutation={MOVIE_ADD_FAV} variables={variables}>
+  <Mutation
+    mutation={MOVIE_ADD_FAV}
+    refetchQueries={[
+      {
+        query: MOVIE_QUERY,
+        variables
+      }
+    ]}
+  >
     {(mutation, result) => render({ mutation, result })}
   </Mutation>
 )
 
 const MOVIE_STAR_UPDATE = gql`
-  mutation MOVIE_STAR_UPDATE($movieId: Int!, $star: bool, $starredSince: date) {
+  mutation MOVIE_STAR_UPDATE(
+    $id: Int!
+    $star: Boolean
+    $starredSince: timestamptz
+  ) {
     update_people_favmovie(
-      where: { id: { _eq: $movieId } }
+      where: { id: { _eq: $id } }
       _set: { star: $star, starred_since: $starredSince }
     ) {
       returning {
@@ -99,19 +145,27 @@ const MOVIE_STAR_UPDATE = gql`
 `
 
 const starToggler = ({ variables, render }) => (
-  <Mutation mutation={MOVIE_STAR_UPDATE} variables={variables}>
+  <Mutation
+    mutation={MOVIE_STAR_UPDATE}
+    refetchQueries={[
+      {
+        query: MOVIE_QUERY,
+        variables
+      }
+    ]}
+  >
     {(mutation, result) => render({ mutation, result })}
   </Mutation>
 )
 
 const MOVIE_WATCH_UPDATE = gql`
   mutation MOVIE_WATCH_UPDATE(
-    $movieId: Int!
-    $watched: bool
-    $watchedSince: date
+    $id: Int!
+    $watched: Boolean
+    $watchedSince: timestamptz
   ) {
     update_people_favmovie(
-      where: { id: { _eq: $movieId } }
+      where: { id: { _eq: $id } }
       _set: { watched: $watched, watched_since: $watchedSince }
     ) {
       returning {
@@ -123,8 +177,8 @@ const MOVIE_WATCH_UPDATE = gql`
   }
 `
 
-const watchToggler = ({ variables, render }) => (
-  <Mutation mutation={MOVIE_WATCH_UPDATE} variables={variables}>
+const watchToggler = ({ render }) => (
+  <Mutation mutation={MOVIE_WATCH_UPDATE}>
     {(mutation, result) => render({ mutation, result })}
   </Mutation>
 )
@@ -133,6 +187,7 @@ export const MovieOps = adopt({
   addFav,
   starToggler,
   watchToggler,
+  movieSearch,
   movie: ({ variables, render }) => (
     <Query query={MOVIE_QUERY} variables={variables}>
       {result => render({ result })}

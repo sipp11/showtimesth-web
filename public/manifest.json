@@ -14,7 +14,7 @@
     }
   ],
   "start_url": "/utm_source=a2hs",
-  "display": "fullscreen",
+  "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "orientation": "portrait-primary"

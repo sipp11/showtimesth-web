@@ -1,92 +1,14 @@
 import React from "react"
-import { Query, Mutation } from "react-apollo"
-import gql from "graphql-tag"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import { Link } from "react-router-dom"
 import { Subscribe } from "unstated"
-import fecha from "fecha"
 import Loading from "../Loading"
 import BasicContainer from "../../unstated/basic"
 import { imgSrc } from "../../lib/posterImage"
-import { getYear } from "../../lib/dt"
-import { DimBox, BrightBox, Breadcrum } from "../../lib/piece"
-
-const THEATER_ADD_FAV = gql`
-  mutation THEATER_ADD_FAV($tId: Int!) {
-    insert_people_favtheater(
-      objects: { theater_id: $tId }
-      on_conflict: {
-        constraint: people_favtheater_pkey
-        update_columns: theater_id
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
-
-const THEATER_UN_FAV = gql`
-  mutation THEATER_UN_FAV($id: Int!) {
-    delete_people_favtheater(where: { id: { _eq: $id } }) {
-      affected_rows
-    }
-  }
-`
-
-const THEATER = gql`
-  query THEATER($id: Int!, $day: date, $userId: Int) {
-    people_favtheater(
-      where: { _and: { user_id: { _eq: $userId }, theater_id: { _eq: $id } } }
-    ) {
-      id
-      user_id
-      theater_id
-    }
-    theater_theater(where: { id: { _eq: $id } }) {
-      english
-      thai
-      tel
-      location
-      favs_aggregate {
-        aggregate {
-          count
-        }
-      }
-      chain {
-        code
-        english
-      }
-      showtimes(
-        where: { date: { _eq: $day } }
-        order_by: { movie: { title: asc }, audio: asc, screen: asc }
-      ) {
-        movie {
-          id
-          title
-          duration
-          release_date
-          language
-          images(
-            where: { type: { _eq: "Poster" } }
-            order_by: { order: desc }
-            limit: 1
-          ) {
-            location
-            source
-            type
-            url
-          }
-        }
-        audio
-        caption
-        screen
-        time
-        technology
-      }
-    }
-  }
-`
+import { getYear, getToday } from "../../lib/dt"
+import { DimBox, BrightBox, Breadcrum, ifttt } from "../../lib/piece"
+import { TheaterOps } from "./Ops"
 
 const FigImage = styled.figure`
   display: block;
@@ -150,218 +72,212 @@ const ScreenTime = styled.div`
   }
 `
 
-const UnFav = props => (
-  <Mutation
-    mutation={THEATER_UN_FAV}
-    refetchQueries={[
-      {
-        query: THEATER,
-        variables: {
-          id: props.tId,
-          userId: props.userId,
-          day: fecha.format(new Date(), "YYYY-MM-DD")
-        }
+const Button = styled.button`
+  margin: 0 0.3rem;
+  font-weight: 600;
+  padding-bottom: 0;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  padding-top: 0;
+`
+
+const MovieScreenAndTime = props => {
+  const { one } = props
+  return (
+    <DimBox>
+      <article className="media">
+        <div className="media-left">
+          <Link to={`/m/${one[0].movie.id}`}>
+            <FigImage>
+              <img src={imgSrc(one[0].movie.images)} width="35" height="70" />
+            </FigImage>
+          </Link>
+        </div>
+        <div className="media-content">
+          <div className="content">
+            <div>
+              <strong>
+                {one[0].movie.title}{" "}
+                <span className="muted">
+                  ({getYear(one[0].movie.release_date)})
+                </span>
+              </strong>
+              <br />
+              <small className="muted">{one[0].movie.duration} min</small>
+            </div>
+            {one.map(ele => (
+              <ScreenBox>
+                <ScreenInfo>
+                  {ele.technology !== "2d" && (
+                    <> {ele.technology.toUpperCase()} </>
+                  )}
+                  <FontAwesome name={"volume-up"} />{" "}
+                  {ele.audio || ele.movie.language}{" "}
+                  {ele.caption && (
+                    <>
+                      <FontAwesome name={"font"} /> {ele.caption}{" "}
+                    </>
+                  )}
+                  {ele.screen && (
+                    <span className="muted">
+                      <br />
+                      <FontAwesome name={"ticket"} /> {ele.screen}{" "}
+                    </span>
+                  )}
+                </ScreenInfo>
+                <ScreenTime>
+                  {ele.time.split(",").map(i => (
+                    <span>{i}</span>
+                  ))}
+                </ScreenTime>
+              </ScreenBox>
+            ))}
+          </div>
+        </div>
+      </article>
+    </DimBox>
+  )
+}
+
+class Detail extends React.Component {
+  state = {
+    favLoading: false
+  }
+
+  toggleFavLoading = () => {
+    this.setState({ favLoading: !this.state.favLoading })
+  }
+
+  render() {
+    const { userId, theater } = this.props
+    const {
+      id,
+      chain,
+      english,
+      thai,
+      tel,
+      location,
+      showtimes,
+      favs,
+      favs_aggregate: {
+        aggregate: { count }
       }
-    ]}
-  >
-    {(unFavTheater, { data }) => (
-      <span
-        className={`tag ${props.isFav ? "is-danger" : "is-white"}`}
-        onClick={() => {
-          unFavTheater({ variables: { id: props.favData[0].id } })
-        }}
-      >
-        <FontAwesome name="heart" />
-        &nbsp;UnFav {props.favCount}
-      </span>
-    )}
-  </Mutation>
-)
-
-const ToFav = props => (
-  <Mutation
-    mutation={THEATER_ADD_FAV}
-    refetchQueries={[
-      {
-        query: THEATER,
-        variables: {
-          id: props.tId,
-          userId: props.userId,
-          day: fecha.format(new Date(), "YYYY-MM-DD")
-        }
+    } = theater
+    let m = {}
+    showtimes.map(ele => {
+      if (!m[ele.movie.id]) {
+        m[ele.movie.id] = []
       }
-    ]}
-  >
-    {(addFavTheater, { data }) => (
-      <span
-        className={`tag ${props.isFav ? "is-danger" : "is-white"}`}
-        onClick={() => {
-          addFavTheater({ variables: { tId: props.tId } })
-        }}
-      >
-        <FontAwesome name="heart" />
-        &nbsp;Fav {props.favCount}
-      </span>
-    )}
-  </Mutation>
-)
+      m[ele.movie.id].push(ele)
+      return null
+    })
 
-const FavController = props => (
-  <>
-    {!props.isFav && <ToFav {...props} />}
-    {props.isFav && <UnFav {...props} />}
-  </>
-)
+    const favCount = count
+    const userFav = favs.filter(f => f.user_id === userId)
 
-const Theater = props => (
-  <Query
-    query={THEATER}
+    return (
+      <>
+        <Breadcrum
+          className="breadcrumb has-bullet-separator is-centered"
+          aria-label="breadcrumbs"
+        >
+          <ul>
+            <li>
+              <a href="#">{chain.english}</a>
+            </li>
+            <li className="is-active">
+              <a href="#" aria-current="page">
+                {english}
+              </a>
+            </li>
+          </ul>
+        </Breadcrum>
+        <BrightBox>
+          <h1>{thai}</h1>
+          <Desc>
+            {tel && (
+              <span>
+                <FontAwesome name="phone" /> {tel}
+              </span>
+            )}
+            {tel && (
+              <span>
+                <FontAwesome name="map-marker" /> {location}
+              </span>
+            )}
+          </Desc>
+
+          <Button
+            className={`button is-small ${
+              userFav.length > 0 ? "is-danger" : ""
+            } ${this.state.favLoading ? "is-loading" : ""}`}
+            disabled={userId === -1 || this.state.favLoading}
+            onClick={async () => {
+              this.toggleFavLoading()
+              const { addFav, unFav } = this.props.mutation
+              let vars
+              if (userFav.length === 0) {
+                vars = {
+                  theaterId: id
+                }
+                await addFav.mutation({
+                  variables: vars
+                })
+                this.toggleFavLoading()
+                return
+              }
+              await unFav.mutation({
+                variables: {
+                  id: userFav[0].id
+                }
+              })
+              this.toggleFavLoading()
+            }}
+          >
+            {ifttt(userFav.length === 0, "Fav", "Faved")}{" "}
+            {favCount > 0 ? `${favCount}` : ""}
+          </Button>
+        </BrightBox>
+
+        {showtimes.length === 0 && (
+          <DimBox center={true}>ยังไม่มีข้อมูลรอบหนัง</DimBox>
+        )}
+
+        {Object.keys(m).map(key => (
+          <MovieScreenAndTime key={`mst-${key}`} one={m[key]} />
+        ))}
+      </>
+    )
+  }
+}
+
+const TheaterOne = props => (
+  <TheaterOps
     variables={{
-      id: props.id,
-      day: fecha.format(new Date(), "YYYY-MM-DD"),
+      theaterId: props.id,
+      day: getToday(),
       userId: props.basic.getUserId() || -1
     }}
   >
-    {({ loading, error, data }) => {
+    {({ addFav, unFav, theater: { result } }) => {
+      const { loading, data, error } = result
+
       if (loading) return <Loading />
       if (!data || !data.theater_theater) return <div>No data yet</div>
-
-      const {
-        english,
-        thai,
-        tel,
-        location,
-        showtimes,
-        chain,
-        favs_aggregate: {
-          aggregate: { count }
-        }
-      } = data.theater_theater[0]
-      let m = {}
-      showtimes.map(ele => {
-        if (!m[ele.movie.id]) {
-          m[ele.movie.id] = []
-        }
-        m[ele.movie.id].push(ele)
-        return null
-      })
-
-      const isFav = data.people_favtheater.length > 0
-
+      const theater = data.theater_theater[0]
       return (
-        <>
-          <Breadcrum
-            className="breadcrumb has-bullet-separator is-centered"
-            aria-label="breadcrumbs"
-          >
-            <ul>
-              <li>
-                <a href="#">{chain.english}</a>
-              </li>
-              <li className="is-active">
-                <a href="#" aria-current="page">
-                  {english}
-                </a>
-              </li>
-            </ul>
-          </Breadcrum>
-          <BrightBox>
-            <h1>{thai}</h1>
-            <Desc>
-              {tel && (
-                <span>
-                  <FontAwesome name="phone" /> {tel}
-                </span>
-              )}
-              {tel && (
-                <span>
-                  <FontAwesome name="map-marker" /> {location}
-                </span>
-              )}
-            </Desc>
-            <FavController
-              isFav={isFav}
-              favCount={count}
-              favData={data.people_favtheater}
-              tId={props.id}
-              userId={props.basic.getUserId()}
-            />
-          </BrightBox>
-
-          {showtimes.length === 0 && (
-            <DimBox center={true}>ยังไม่มีข้อมูลรอบหนัง</DimBox>
-          )}
-
-          {Object.keys(m).map(key => (
-            <DimBox>
-              <article className="media">
-                <div className="media-left">
-                  <Link to={`/m/${m[key][0].movie.id}`}>
-                    <FigImage>
-                      <img
-                        src={imgSrc(m[key][0].movie.images)}
-                        width="35"
-                        height="70"
-                      />
-                    </FigImage>
-                  </Link>
-                </div>
-                <div className="media-content">
-                  <div className="content">
-                    <div>
-                      <strong>
-                        {m[key][0].movie.title}{" "}
-                        <span className="muted">
-                          ({getYear(m[key][0].movie.release_date)})
-                        </span>
-                      </strong>
-                      <br />
-                      <small className="muted">
-                        {m[key][0].movie.duration} min
-                      </small>
-                    </div>
-                    {m[key].map(ele => (
-                      <ScreenBox>
-                        <ScreenInfo>
-                          {ele.technology !== "2d" && (
-                            <> {ele.technology.toUpperCase()} </>
-                          )}
-                          <FontAwesome name={"volume-up"} />{" "}
-                          {ele.audio || ele.movie.language}{" "}
-                          {ele.caption && (
-                            <>
-                              <FontAwesome name={"font"} /> {ele.caption}{" "}
-                            </>
-                          )}
-                          {ele.screen && (
-                            <span className="muted">
-                              <br />
-                              <FontAwesome name={"ticket"} /> {ele.screen}{" "}
-                            </span>
-                          )}
-                        </ScreenInfo>
-                        <ScreenTime>
-                          {ele.time.split(",").map(i => (
-                            <span>{i}</span>
-                          ))}
-                        </ScreenTime>
-                      </ScreenBox>
-                    ))}
-                  </div>
-                </div>
-              </article>
-            </DimBox>
-          ))}
-        </>
+        <Detail
+          theater={theater}
+          userId={props.basic.getUserId()}
+          mutation={{ addFav, unFav }}
+        />
       )
     }}
-  </Query>
+  </TheaterOps>
 )
 
-export default props => {
-  return (
-    <Subscribe to={[BasicContainer]}>
-      {basic => <Theater {...props} basic={basic} />}
-    </Subscribe>
-  )
-}
+export default props => (
+  <Subscribe to={[BasicContainer]}>
+    {basic => <TheaterOne {...props} basic={basic} />}
+  </Subscribe>
+)

@@ -17,8 +17,10 @@
     "react-apollo": "^2.5.5",
     "react-dom": "^16.8.6",
     "react-fontawesome": "^1.6.1",
+    "react-markdown": "^4.0.8",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
+    "rsync": "^0.6.1",
     "socket.io-client": "^2.2.0",
     "styled-components": "^4.2.0",
     "unstated": "^2.1.1"
@@ -27,7 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev_publish": "node script/publish_10z"
   },
   "eslintConfig": {
     "extends": "react-app"

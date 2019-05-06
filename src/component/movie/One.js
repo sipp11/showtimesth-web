@@ -2,10 +2,11 @@ import React from "react"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
 import FontAwesome from "react-fontawesome"
+import ReactMarkdown from 'react-markdown'
 import BasicContainer from "../../unstated/basic"
 import Loading from "../Loading"
-import { BrightBox, DimBox } from "../../lib/piece"
-import { getYear } from "../../lib/dt"
+import { BrightBox, DimBox, ifttt } from "../../lib/piece"
+import { getYear, getNow } from "../../lib/dt"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
 
@@ -86,6 +87,33 @@ const Desc = styled.div`
   align-items: flex-start;
   font-size: 0.9rem;
   color: #cbd3dd;
+
+  h1 {
+    font-size: 1.4rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+  h3 {
+    font-size: 1.2rem;
+  }
+  h4 {
+    font-size: 1.1rem;
+  }
+  h5 {
+    font-size: 1.1rem;
+  }
+  h6 {
+    font-size: 1.0rem;
+  }
+
+  span {
+    margin-top: 0.25rem;
+
+    em {
+      font-weight: 600;
+    }
+  }
 `
 
 const ButtonContainer = styled.span`
@@ -103,140 +131,173 @@ const ButtonContainer = styled.span`
   }
 `
 
-const Detail = props => {
-  const {
-    id,
-    details,
-    videos,
-    votes_aggregate: { aggregate },
-    votes,
-    favs
-  } = props.movie
-  let selDetail = {}
-  if (details.filter(d => d.language === "th").length > 0) {
-    selDetail = details.filter(d => d.language === "th")[0]
-  } else if (details.length > 0) {
-    selDetail = details[0]
+class Detail extends React.Component {
+  state = {
+    favLoading: false
   }
-  const likeCount = favs.filter(f => f.star).length
-  const watchCount = favs.filter(f => f.watched).length
-  const { userId } = props
-  return (
-    <>
-      <FlexBrightBox marginBottom={0}>
-        <div className="poster">
-          <PosterItem {...props.movie} />
-        </div>
-      </FlexBrightBox>
-      <FlexDimBox marginBottom={0}>
-        <div style={{ width: "110px" }} />
-        <h1>
-          {props.movie.title}
-          <span className="muted"> ({getYear(props.movie.release_date)})</span>
-        </h1>
-      </FlexDimBox>
-      <DetailDimBox>
-        <Desc>
-          <ButtonContainer>
-            <button
-              className="button is-small"
-              disabled={userId === -1}
-              onClick={async () => {
-                const { addFav, starToggler } = props.mutation
-                const userFav = favs.filter(f => f.user_id === userId)
-                let vars
-                if (userFav.length === 0) {
-                  vars = {
-                    movieId: id,
-                    star: true,
-                    starredSince: new Date().toISOString(),
-                    watched: false,
-                    watchedSince: null
+
+  toggleFavLoading = () => {
+    this.setState({ favLoading: !this.state.favLoading })
+  }
+
+  render() {
+    const { userId, movie } = this.props
+    const {
+      id,
+      details,
+      videos,
+      votes_aggregate: { aggregate },
+      favs
+    } = movie
+    let selDetail = {}
+    if (details.filter(d => d.language === "th").length > 0) {
+      selDetail = details.filter(d => d.language === "th")[0]
+    } else if (details.length > 0) {
+      selDetail = details[0]
+    }
+    const likeCount = favs.filter(f => f.star).length
+    const watchCount = favs.filter(f => f.watched).length
+    const userFav = favs.filter(f => f.user_id === userId)
+    const userLike =
+      userFav.length > 0 && userFav.filter(f => f.star).length > 0
+    const hasWatched =
+      userFav.length > 0 && userFav.filter(f => f.watched).length > 0
+    return (
+      <>
+        <FlexBrightBox marginBottom={0}>
+          <div className="poster">
+            <PosterItem {...movie} />
+          </div>
+        </FlexBrightBox>
+        <FlexDimBox marginBottom={0}>
+          <div style={{ width: "110px" }} />
+          <h1>
+            {movie.title}
+            <span className="muted"> ({getYear(movie.release_date)})</span>
+          </h1>
+        </FlexDimBox>
+        <DetailDimBox>
+          <Desc>
+            <ButtonContainer>
+              <button
+                className={`button is-small ${userLike ? "is-danger" : ""} ${
+                  this.state.favLoading ? "is-loading" : ""
+                }`}
+                disabled={userId === -1 || this.state.favLoading}
+                onClick={async () => {
+                  this.toggleFavLoading()
+                  const { addFav, starToggler } = this.props.mutation
+                  let vars
+                  if (userFav.length === 0) {
+                    vars = {
+                      movieId: id,
+                      star: true,
+                      starredSince: getNow(),
+                      watched: false,
+                      watchedSince: null
+                    }
+                    await addFav.mutation({
+                      variables: vars
+                    })
+                    this.toggleFavLoading()
+                    return
                   }
-                  addFav.mutation({
-                    variables: vars
+                  await starToggler.mutation({
+                    variables: {
+                      id: userFav[0].id,
+                      star: !userLike,
+                      starredSince: userLike ? null : getNow()
+                    }
                   })
-                  return
-                }
-                const userLike =
-                  userFav.length > 0 && userFav.filter(f => f.star).length > 0
+                  this.toggleFavLoading()
+                }}
+              >
+                {ifttt(userLike, "Liked", "Like")}{" "}
+                {likeCount > 0 ? `${likeCount}` : ""}
+              </button>
+              <button
+                className={`button is-small ${hasWatched ? "is-danger" : ""} ${
+                  this.state.favLoading ? "is-loading" : ""
+                }`}
+                disabled={userId === -1 || this.state.favLoading}
+                onClick={async () => {
+                  this.toggleFavLoading()
+                  const { addFav, watchToggler } = this.props.mutation
+                  let vars
+                  if (userFav.length === 0) {
+                    vars = {
+                      movieId: id,
+                      star: false,
+                      starredSince: null,
+                      watched: true,
+                      watchedSince: getNow()
+                    }
+                    await addFav.mutation({
+                      variables: vars
+                    })
 
-                await starToggler.mutation({
-                  variables: {
-                    movieId: id,
-                    star: !userLike,
-                    starredSince: userLike ? null : new Date().toISOString()
+                    this.toggleFavLoading()
+                    return
                   }
-                })
 
-                if (!userLike) {
-                  console.log("LIKE")
-                  // unFavTheater({ variables: { id: props.favData[0].id } })
-                } else {
-                  console.log("UNLIKE")
-                }
-              }}
-            >
-              Like {likeCount > 0 ? `${likeCount}` : ""}
-            </button>
-            <button
-              className="button is-small is-danger"
-              disabled={userId === -1}
-              onClick={() => {
-                const userWatch = favs.filter(
-                  f => f.watched && f.user_id === userId
-                ).length
-                if (userWatch === 0) {
-                  console.log("WATCHED")
-                } else {
-                  console.log("UNWATCHED")
-                }
-              }}
-            >
-              Watch {watchCount > 0 ? `${watchCount}` : ""}
-            </button>
-          </ButtonContainer>
-          <span>
-            {videos.map(v => (
-              <div key={`v-${v.url}-${v.source}`} className="video">
-                <a href={`https://youtu.be/${v.url}`}>
-                  <FontAwesome name="youtube-play" />
-                  <span>
-                    {v.kind} {v.source}
-                  </span>
-                </a>
-              </div>
-            ))}
-          </span>
-          {aggregate.count > 0 && (
+                  await watchToggler.mutation({
+                    variables: {
+                      id: userFav[0].id,
+                      watched: !hasWatched,
+                      watchedSince: hasWatched ? null : getNow()
+                    }
+                  })
+
+                  this.toggleFavLoading()
+                }}
+              >
+                {ifttt(hasWatched, "Watched", "Watch")}{" "}
+                {watchCount > 0 ? `${watchCount}` : ""}
+              </button>
+            </ButtonContainer>
             <span>
-              <FontAwesome name="star" /> {aggregate.avg.points || "0"}{" "}
-              <small className="muted">({aggregate.count} votes)</small>
+              {videos.map(v => (
+                <div key={`v-${v.url}-${v.source}`} className="video">
+                  <a href={`https://youtu.be/${v.url}`}>
+                    <FontAwesome name="youtube-play" />
+                    <span>
+                      {v.kind} {v.source}
+                    </span>
+                  </a>
+                </div>
+              ))}
             </span>
-          )}
-          <span>
-            <em>Release date</em>: {props.movie.release_date}
-          </span>
-          {selDetail.language !== undefined && (
-            <>
+            {aggregate.count > 0 && (
               <span>
-                <em>Director</em>: <br />
-                &nbsp;&nbsp;&nbsp;{selDetail.director || "-"}
+                <FontAwesome name="star" />{" "}
+                {aggregate.avg.points.toFixed(1) || "0"}{" "}
+                <small className="muted">({aggregate.count} votes)</small>
               </span>
-              <span>
-                <em>Casts</em>: <br />
-                &nbsp;&nbsp;&nbsp;{selDetail.cast || "-"}
-              </span>
-              <span>
-                <em>Storyline</em>: <br />
-                &nbsp;&nbsp;&nbsp;{selDetail.storyline || "-"}
-              </span>
-            </>
-          )}
-        </Desc>
-      </DetailDimBox>
-    </>
-  )
+            )}
+            <span>
+              <em>Release date</em>: {movie.release_date}
+            </span>
+            {selDetail.language !== undefined && (
+              <>
+                <span>
+                  <em>Director</em>: <br />
+                  &nbsp;&nbsp;&nbsp;{selDetail.director || "-"}
+                </span>
+                <span>
+                  <em>Casts</em>: <br />
+                  &nbsp;&nbsp;&nbsp;{selDetail.cast || "-"}
+                </span>
+                <span>
+                  <em>Storyline</em>: <br />
+                  <ReactMarkdown source={selDetail.storyline || '-'} />
+                </span>
+              </>
+            )}
+          </Desc>
+        </DetailDimBox>
+      </>
+    )
+  }
 }
 
 const MovieOne = props => (
