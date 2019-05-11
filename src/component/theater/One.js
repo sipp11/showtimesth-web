@@ -9,6 +9,7 @@ import { imgSrc } from "../../lib/posterImage"
 import { getYear, getToday } from "../../lib/dt"
 import { DimBox, BrightBox, Breadcrum, ifttt } from "../../lib/piece"
 import { TheaterOps } from "./Ops"
+import ListItemBlank from "../ListItemBlank"
 
 const FigImage = styled.figure`
   display: block;
@@ -105,8 +106,8 @@ const MovieScreenAndTime = props => {
               <br />
               <small className="muted">{one[0].movie.duration} min</small>
             </div>
-            {one.map(ele => (
-              <ScreenBox>
+            {one.map((ele, key) => (
+              <ScreenBox key={`mst-${key}`}>
                 <ScreenInfo>
                   {ele.technology !== "2d" && (
                     <> {ele.technology.toUpperCase()} </>
@@ -127,7 +128,7 @@ const MovieScreenAndTime = props => {
                 </ScreenInfo>
                 <ScreenTime>
                   {ele.time.split(",").map(i => (
-                    <span>{i}</span>
+                    <span key={`mst-${key}-${i}`}>{i}</span>
                   ))}
                 </ScreenTime>
               </ScreenBox>
@@ -263,7 +264,7 @@ const TheaterOne = props => (
       const { loading, data, error } = result
 
       if (loading) return <Loading />
-      if (!data || !data.theater_theater) return <div>No data yet</div>
+      if (!data || !data.theater_theater) return <ListItemBlank />
       const theater = data.theater_theater[0]
       return (
         <Detail

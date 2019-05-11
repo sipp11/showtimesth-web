@@ -51,37 +51,6 @@ const MOVIE_QUERY = gql`
   }
 `
 
-const MOVIE_SEARCH = gql`
-  query MOVIE_SEARCH($pattern: String!, $offset: Int!) {
-    theater_search(args: { _pattern: $pattern }, offset: $offset) {
-      id
-      title
-      release_date
-      tags
-      votes_aggregate {
-        aggregate {
-          avg {
-            points
-          }
-          count
-        }
-      }
-      favs {
-        id
-        watched
-        star
-        user_id
-      }
-    }
-  }
-`
-
-const movieSearch = ({ variables, render }) => (
-  <Query query={MOVIE_SEARCH} variables={variables}>
-    {result => render({ result })}
-  </Query>
-)
-
 const MOVIE_ADD_FAV = gql`
   mutation MOVIE_ADD_FAV(
     $movieId: Int!
@@ -187,7 +156,6 @@ export const MovieOps = adopt({
   addFav,
   starToggler,
   watchToggler,
-  movieSearch,
   movie: ({ variables, render }) => (
     <Query query={MOVIE_QUERY} variables={variables}>
       {result => render({ result })}

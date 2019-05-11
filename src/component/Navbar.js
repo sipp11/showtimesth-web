@@ -61,12 +61,12 @@ const Navbar = props => (
             </Link>
           </BoxItem>
 
-          <BoxItem>
+          {/* <BoxItem>
             <Link to="/share" className="navbar-item">
               <FontAwesome name={"share"} />
               &nbsp;Share
             </Link>
-          </BoxItem>
+          </BoxItem> */}
         </>
       )}
       {props.basic.state.token && (
@@ -85,6 +85,12 @@ const Navbar = props => (
           </BoxItem>
         </>
       )}
+      <BoxItem>
+        <Link to="/search" className="navbar-item">
+          <FontAwesome name="search" />
+          &nbsp;&nbsp;
+        </Link>
+      </BoxItem>
     </Box>
   </Nav>
 )

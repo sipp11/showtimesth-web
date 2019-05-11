@@ -24,6 +24,22 @@ const FAV_MOVIES = gql`
   }
 `
 
+export const TheaterListItem = props => (
+  <Link to={`/t/${props.theater.id}`}>
+    <ListItem>
+      <article>
+        <div className="content">
+          <p>
+            <strong>{props.theater.english}</strong>
+            <br />
+            <small>{props.theater.thai}</small>
+          </p>
+        </div>
+      </article>
+    </ListItem>
+  </Link>
+)
+
 const FavTheater = props => (
   <Query query={FAV_MOVIES} variables={{ userId: props.basic.getUserId() }}>
     {({ loading, error, data }) => {
@@ -32,28 +48,7 @@ const FavTheater = props => (
       return (
         <>
           {data.people_favtheater.map(ele => (
-            <Link to={`/t/${ele.theater.id}`}>
-              <ListItem>
-                <article>
-                  <div className="content">
-                    <p>
-                      <strong>{ele.theater.english}</strong>
-                      <br />
-                      <small>{ele.theater.thai}</small>
-                    </p>
-                  </div>
-                  {/* <nav class="level is-mobile">
-                  <div class="level-left">
-                    <a class="level-item" aria-label="reply">
-                      <span class="icon is-small">
-                        <i class="fas fa-reply" aria-hidden="true" />
-                      </span>
-                    </a>
-                  </div>
-                </nav> */}
-                </article>
-              </ListItem>
-            </Link>
+            <TheaterListItem theater={ele.theater} />
           ))}
         </>
       )

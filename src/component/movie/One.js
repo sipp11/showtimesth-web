@@ -2,13 +2,14 @@ import React from "react"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
 import FontAwesome from "react-fontawesome"
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from "react-markdown"
 import BasicContainer from "../../unstated/basic"
 import Loading from "../Loading"
 import { BrightBox, DimBox, ifttt } from "../../lib/piece"
 import { getYear, getNow } from "../../lib/dt"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
+import ListItemBlank from "../ListItemBlank"
 
 const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   display: flex;
@@ -104,7 +105,7 @@ const Desc = styled.div`
     font-size: 1.1rem;
   }
   h6 {
-    font-size: 1.0rem;
+    font-size: 1rem;
   }
 
   span {
@@ -289,7 +290,7 @@ class Detail extends React.Component {
                 </span>
                 <span>
                   <em>Storyline</em>: <br />
-                  <ReactMarkdown source={selDetail.storyline || '-'} />
+                  <ReactMarkdown source={selDetail.storyline || "-"} />
                 </span>
               </>
             )}
@@ -308,7 +309,7 @@ const MovieOne = props => (
       const { loading, data, error } = result
 
       if (loading) return <Loading />
-      if (!data || !data.movie_movie) return <div>No data yet</div>
+      if (!data || !data.movie_movie) return <ListItemBlank />
       const mov = data.movie_movie[0]
       return (
         <Detail

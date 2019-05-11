@@ -55,33 +55,6 @@ const THEATER_QUERY = gql`
   }
 `
 
-const THEATER_SEARCH = gql`
-  query THEATER_SEARCH($pattern: String!, $offset: Int!) {
-    theater_search(args: { _pattern: $pattern }, offset: $offset) {
-      chain {
-        code
-        english
-        thai
-      }
-      id
-      slug
-      english
-      thai
-      favs_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`
-
-const theaterSearch = ({ variables, render }) => (
-  <Query query={THEATER_SEARCH} variables={variables}>
-    {result => render({ result })}
-  </Query>
-)
-
 const THEATER_ADD_FAV = gql`
   mutation THEATER_ADD_FAV($theaterId: Int!) {
     insert_people_favtheater(
@@ -135,7 +108,6 @@ const unFav = ({ variables, render }) => (
 export const TheaterOps = adopt({
   addFav,
   unFav,
-  theaterSearch,
   theater: ({ variables, render }) => (
     <Query query={THEATER_QUERY} variables={variables}>
       {result => render({ result })}

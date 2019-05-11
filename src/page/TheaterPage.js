@@ -9,6 +9,7 @@ class TheaterPage extends Component {
     return (
       <PageContainer>
         <Navbar />
+        {id === "search" && <span>Search?</span>}
         {!id && <span>Should be a list and search, huh?</span>}
         {id && <One id={id} />}
       </PageContainer>

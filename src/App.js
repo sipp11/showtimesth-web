@@ -12,6 +12,7 @@ import FavPage from "./page/FavPage"
 import TheaterPage from "./page/TheaterPage"
 import MoviePage from "./page/MoviePage"
 import UserPage from "./page/UserPage"
+import SearchPage from "./page/SearchPage"
 
 const socket = io(API_URL)
 
@@ -69,6 +70,7 @@ const App = () => (
     <Route path="/t/:id" component={props => <TheaterPage {...props} />} />
     <Route path="/t" component={TheaterPage} />
     <Route path="/m/:id" component={MoviePage} />
+    <Route path="/search" component={SearchPage} />
     <Route path="/fav" component={FavPage} />
     <Route path="/me" component={UserPage} />
     <Route path="/:page" component={AppPage} />
