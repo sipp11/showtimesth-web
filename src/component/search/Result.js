@@ -12,16 +12,41 @@ const TheaterResult = props => (
   </>
 )
 
-const SearchResult = props => (
-  <SearchOps
-    variables={{ pattern: props.query }}
-    movieSkip={props.movieSkip}
-    theaterSkip={props.theaterSkip}
-  >
-    {({ theaterSearch }) => {
-      const { loading, data, error } = theaterSearch.result
-      if (loading) return <Loading />
-      if (!data || !data.theater_search || data.theater_search.length === 0)
+const SearchResult = props => {
+  let variables = {}
+
+  if (!props.nearbySkip) {
+    variables = {
+      lat: props.lat,
+      lon: props.lon
+    }
+  } else if (!props.theaterSkip) {
+    variables = { pattern: props.query }
+  }
+
+  return (
+    <SearchOps
+      variables={variables}
+      movieSkip={props.movieSkip}
+      theaterSkip={props.theaterSkip}
+      nearbySkip={props.nearbySkip}
+    >
+      {({ theaterSearch, nearbyTheaters }) => {
+        let { loading, data, error } = theaterSearch.result
+        if (loading) return <Loading />
+        if (data && data.theater_search && data.theater_search.length > 0) {
+          return <TheaterResult theaters={data.theater_search} />
+        }
+        const nearbyData = nearbyTheaters.result.data
+
+        if (
+          nearbyData &&
+          nearbyData.nearby_theaters &&
+          nearbyData.nearby_theaters.length > 0
+        ) {
+          return <TheaterResult theaters={nearbyData.nearby_theaters} />
+        }
+
         return (
           <ListItemBlank
             message={
@@ -29,9 +54,9 @@ const SearchResult = props => (
             }
           />
         )
-      return <TheaterResult theaters={data.theater_search} />
-    }}
-  </SearchOps>
-)
+      }}
+    </SearchOps>
+  )
+}
 
 export default SearchResult

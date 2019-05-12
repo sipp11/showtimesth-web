@@ -27,7 +27,7 @@ export const theaterSearch = ({ variables, theaterSkip, render }) => (
 )
 
 const NEARBY_THEATERS = gql`
-  query NEARBY_THEATERS($lat: Float!, $lon: Float!, $offset: Int) {
+  query NEARBY_THEATERS($lat: float8!, $lon: float8!, $offset: Int) {
     nearby_theaters(args: {lat: $lat, lon: $lon}, offset: $offset) {
       chain {
         code
