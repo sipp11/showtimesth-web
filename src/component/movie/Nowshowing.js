@@ -10,6 +10,7 @@ const NOWSHOWING_MOVIES = gql`
   query NOWSHOWING_MOVIES($day: date!) {
     nowshowing_movies(args: { day: $day }) {
       id
+      slug
       title
       release_date
       language

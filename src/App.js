@@ -1,12 +1,10 @@
 import React from "react"
 import { Switch, Route, Link } from "react-router-dom"
 import io from "socket.io-client"
-import { Subscribe } from "unstated"
 import { API_URL } from "./config"
 import logo from "./logo.svg"
 import "./App.css"
 import LoginPage from "./page/LoginPage"
-import BasicContainer from "./unstated/basic"
 import AppPage from "./page/AppPage"
 import FavPage from "./page/FavPage"
 import TheaterPage from "./page/TheaterPage"
@@ -16,7 +14,7 @@ import SearchPage from "./page/SearchPage"
 
 const socket = io(API_URL)
 
-const Blank = () => (
+/* const Blank = () => (
   <Subscribe to={[BasicContainer]}>
     {basic => (
       <div className="App">
@@ -43,7 +41,7 @@ const Blank = () => (
       </div>
     )}
   </Subscribe>
-)
+) */
 
 const Page404 = () => (
   <div className="App">
@@ -69,6 +67,7 @@ const App = () => (
     />
     <Route path="/t/:id" component={props => <TheaterPage {...props} />} />
     <Route path="/t" component={TheaterPage} />
+    <Route path="/m/:id/:tab" component={MoviePage} />
     <Route path="/m/:id" component={MoviePage} />
     <Route path="/search" component={SearchPage} />
     <Route path="/fav" component={FavPage} />

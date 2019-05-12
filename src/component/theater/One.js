@@ -3,6 +3,7 @@ import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import { Link } from "react-router-dom"
 import { Subscribe } from "unstated"
+import ReactGA from "react-ga"
 import Loading from "../Loading"
 import BasicContainer from "../../unstated/basic"
 import { imgSrc } from "../../lib/posterImage"
@@ -53,9 +54,7 @@ const ScreenBox = styled.div`
     }
   }
 `
-const ScreenInfo = styled.div`
-  width: 8rem;
-`
+const ScreenInfo = styled.div``
 const ScreenTime = styled.div`
   flex: 1;
   display: flex;
@@ -82,7 +81,34 @@ const Button = styled.button`
   padding-top: 0;
 `
 
-const MovieScreenAndTime = props => {
+export const ScreenAndTime = props => (
+  <ScreenBox>
+    <ScreenInfo>
+      {props.one.technology !== "2d" && (
+        <> {props.one.technology.toUpperCase()} </>
+      )}
+      <FontAwesome name={"volume-up"} /> {props.one.audio}{" "}
+      {props.one.caption && (
+        <>
+          <FontAwesome name={"font"} /> {props.one.caption}{" "}
+        </>
+      )}
+      {props.one.screen && (
+        <span className="muted">
+          <br />
+          <FontAwesome name={"ticket"} /> {props.one.screen}{" "}
+        </span>
+      )}
+    </ScreenInfo>
+    <ScreenTime>
+      {props.one.time.split(",").map(i => (
+        <span key={`mst-${props.ind}-${i}`}>{i}</span>
+      ))}
+    </ScreenTime>
+  </ScreenBox>
+)
+
+export const MovieScreenAndTime = props => {
   const { one } = props
   return (
     <DimBox>
@@ -90,7 +116,12 @@ const MovieScreenAndTime = props => {
         <div className="media-left">
           <Link to={`/m/${one[0].movie.id}`}>
             <FigImage>
-              <img src={imgSrc(one[0].movie.images)} width="35" height="70" />
+              <img
+                alt="poster"
+                src={imgSrc(one[0].movie.images)}
+                width="35"
+                height="70"
+              />
             </FigImage>
           </Link>
         </div>
@@ -107,31 +138,11 @@ const MovieScreenAndTime = props => {
               <small className="muted">{one[0].movie.duration} min</small>
             </div>
             {one.map((ele, key) => (
-              <ScreenBox key={`mst-${key}`}>
-                <ScreenInfo>
-                  {ele.technology !== "2d" && (
-                    <> {ele.technology.toUpperCase()} </>
-                  )}
-                  <FontAwesome name={"volume-up"} />{" "}
-                  {ele.audio || ele.movie.language}{" "}
-                  {ele.caption && (
-                    <>
-                      <FontAwesome name={"font"} /> {ele.caption}{" "}
-                    </>
-                  )}
-                  {ele.screen && (
-                    <span className="muted">
-                      <br />
-                      <FontAwesome name={"ticket"} /> {ele.screen}{" "}
-                    </span>
-                  )}
-                </ScreenInfo>
-                <ScreenTime>
-                  {ele.time.split(",").map(i => (
-                    <span key={`mst-${key}-${i}`}>{i}</span>
-                  ))}
-                </ScreenTime>
-              </ScreenBox>
+              <ScreenAndTime
+                one={ele}
+                ind={key}
+                key={`mst-${one[0].movie.id}-${key}`}
+              />
             ))}
           </div>
         </div>
@@ -143,6 +154,13 @@ const MovieScreenAndTime = props => {
 class Detail extends React.Component {
   state = {
     favLoading: false
+  }
+
+  componentDidMount() {
+    const {
+      theater: { id, slug }
+    } = this.props
+    ReactGA.pageview(`/t/${id}-${slug}`)
   }
 
   toggleFavLoading = () => {
@@ -225,12 +243,22 @@ class Detail extends React.Component {
                   variables: vars
                 })
                 this.toggleFavLoading()
+                ReactGA.event({
+                  category: "Theater",
+                  action: "Add fav",
+                  value: id
+                })
                 return
               }
               await unFav.mutation({
                 variables: {
                   id: userFav[0].id
                 }
+              })
+              ReactGA.event({
+                category: "Theater",
+                action: "Remove fav",
+                value: id
               })
               this.toggleFavLoading()
             }}
@@ -245,17 +273,22 @@ class Detail extends React.Component {
         )}
 
         {Object.keys(m).map(key => (
-          <MovieScreenAndTime key={`mst-${key}`} one={m[key]} />
+          <MovieScreenAndTime key={`mst-${id}-${key}`} one={m[key]} />
         ))}
       </>
     )
   }
 }
 
+const extractTheaterId = id => {
+  if (isNaN(id)) return id.split("-")[0]
+  return id
+}
+
 const TheaterOne = props => (
   <TheaterOps
     variables={{
-      theaterId: props.id,
+      theaterId: extractTheaterId(props.id),
       day: getToday(),
       userId: props.basic.getUserId() || -1
     }}

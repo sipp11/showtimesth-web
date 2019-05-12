@@ -32,7 +32,7 @@ const SearchResult = props => {
       nearbySkip={props.nearbySkip}
     >
       {({ theaterSearch, nearbyTheaters }) => {
-        let { loading, data, error } = theaterSearch.result
+        let { loading, data } = theaterSearch.result
         if (loading) return <Loading />
         if (data && data.theater_search && data.theater_search.length > 0) {
           return <TheaterResult theaters={data.theater_search} />

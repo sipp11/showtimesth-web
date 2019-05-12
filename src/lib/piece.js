@@ -36,8 +36,9 @@ export const DimBox = styled.div`
   background-color: #2b3f56;
   border-radius: 0.2rem;
 
-  padding: 0.5rem 1rem;
+  padding: ${props => (props.padding ? props.padding : "0.5rem 1rem")};
   color: #e3e3e3;
+  font-size: ${props => (props.fontSize ? props.fontSize : "1rem")};
 
   margin-bottom: ${props =>
     props.marginBottom !== undefined ? props.marginBottom : "0.5rem"};
@@ -45,6 +46,12 @@ export const DimBox = styled.div`
 
   strong {
     color: #ebf1fd;
+  }
+  .title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ebf1fd;
+    margin-bottom: 0.5rem;
   }
 `
 
@@ -63,10 +70,14 @@ export const Breadcrum = styled.nav`
   a {
     color: #e3e3e3;
   }
-  a:hover {
-    color: #ebf1fd;
-  }
+
   .is-active > a {
     color: #808a96 !important;
+  }
+
+  @media screen and (min-width: 450px) {
+    a:hover {
+      color: #ebf1fd;
+    }
   }
 `

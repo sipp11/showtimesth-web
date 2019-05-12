@@ -13,7 +13,7 @@ const Item = styled.div`
 `
 
 const PosterItem = props => (
-  <Link to={`/m/${props.id}`}>
+  <Link to={`/m/${props.id}-${props.slug}`}>
     <Item>
       <img src={imgSrc(props.images)} width="95" alt={`${props.title}`} />
       {props.show && props.value}

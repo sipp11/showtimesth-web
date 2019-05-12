@@ -1,8 +1,8 @@
 import fecha from "fecha"
 
-Date.prototype.getWeek = function() {
-  var onejan = new Date(this.getFullYear(), 0, 1)
-  return Math.ceil(((this - onejan) / 86400000 + onejan.getDay() + 1) / 7)
+const weekNo = day => {
+  var onejan = new Date(day.getFullYear(), 0, 1)
+  return Math.ceil(((day - onejan) / 86400000 + onejan.getDay() + 1) / 7)
 }
 
 export const getYear = day => {
@@ -10,7 +10,8 @@ export const getYear = day => {
 }
 
 export const getWeek = day => {
-  return new Date(day).getWeek()
+  const d = new Date(day)
+  return getYear(d) * 100 + weekNo(d)
 }
 
 export const getNow = () => {

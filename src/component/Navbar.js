@@ -14,11 +14,14 @@ const Nav = styled.nav`
   a {
     color: #3b3b3b !important;
   }
-  a:hover {
-    color: #000000 !important;
-    transform: rotate(-1.1deg);
-    transform: scale(1.2);
-    border-radius: 0.2rem;
+
+  @media screen and (min-width: 450px) {
+    a:hover {
+      color: #000000 !important;
+      transform: rotate(-1.1deg);
+      transform: scale(1.2);
+      border-radius: 0.2rem;
+    }
   }
 `
 
@@ -35,9 +38,11 @@ const BoxItem = styled.div`
   text-align: center;
   height: 100%;
 
-  a:hover {
-    background-color: #6ffaf3 !important;
-    color: #3b3b3b !important;
+  @media screen and (min-width: 450px) {
+    a:hover {
+      background-color: #6ffaf3 !important;
+      color: #3b3b3b !important;
+    }
   }
 `
 

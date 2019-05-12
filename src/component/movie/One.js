@@ -2,7 +2,8 @@ import React from "react"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
 import FontAwesome from "react-fontawesome"
-import ReactMarkdown from "react-markdown"
+import { Link } from "react-router-dom"
+import ReactGA from "react-ga"
 import BasicContainer from "../../unstated/basic"
 import Loading from "../Loading"
 import { BrightBox, DimBox, ifttt } from "../../lib/piece"
@@ -10,6 +11,9 @@ import { getYear, getNow } from "../../lib/dt"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
+import DetailTab from "./DetailTab"
+import FavTab from "./FavTab"
+import NearbyTab from "./NearbyTab"
 
 const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   display: flex;
@@ -36,6 +40,7 @@ const FlexBrightBox = styled(props => <BrightBox {...props} />)`
 const FlexDimBox = styled(props => <DimBox {...props} />)`
   display: flex;
   align-items: flex-start;
+  font-size: ${props => (props.fontSize ? props.fontSize : "1rem")};
   h1 {
     padding: 0 0.5rem;
     font-size: 1.8rem;
@@ -61,7 +66,7 @@ const FlexDimBox = styled(props => <DimBox {...props} />)`
   }
 `
 
-const DetailDimBox = styled(props => <DimBox {...props} />)`
+export const DetailDimBox = styled(props => <DimBox {...props} />)`
   div.video {
     display: inline-block;
     margin: 0 10px 10px 0;
@@ -82,41 +87,6 @@ const DetailDimBox = styled(props => <DimBox {...props} />)`
   }
 `
 
-const Desc = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 0.9rem;
-  color: #cbd3dd;
-
-  h1 {
-    font-size: 1.4rem;
-  }
-  h2 {
-    font-size: 1.3rem;
-  }
-  h3 {
-    font-size: 1.2rem;
-  }
-  h4 {
-    font-size: 1.1rem;
-  }
-  h5 {
-    font-size: 1.1rem;
-  }
-  h6 {
-    font-size: 1rem;
-  }
-
-  span {
-    margin-top: 0.25rem;
-
-    em {
-      font-weight: 600;
-    }
-  }
-`
-
 const ButtonContainer = styled.span`
   display: flex;
   flex-flow: row wrap;
@@ -132,6 +102,41 @@ const ButtonContainer = styled.span`
   }
 `
 
+const Tags = styled.span`
+  span.tag {
+    font-size: 0.7rem;
+    background: transparent;
+    color: #cbd3dd;
+    border: 1px solid #cbd3dd;
+  }
+`
+
+const Tab = styled(props => <Link {...props} />)`
+  flex: 1;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid #cbd3dd;
+  padding: 0.25rem 0;
+  color: ${props => (props.active === 1 ? "#363636;" : "#cbd3dd")};
+  background: ${props => (props.active === 1 ? "#fff" : "transparent")};
+
+  :first-child {
+    border-left: 0;
+    border-right: 0;
+  }
+  :last-child {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  @media screen and (min-width: 450px) {
+    :hover {
+      background: #153456;
+      color: #cbd3dd;
+    }
+  }
+`
+
 class Detail extends React.Component {
   state = {
     favLoading: false
@@ -141,12 +146,31 @@ class Detail extends React.Component {
     this.setState({ favLoading: !this.state.favLoading })
   }
 
+  componentDidMount() {
+    const {
+      movie: { id, slug }
+    } = this.props
+    ReactGA.pageview(`/m/${id}-${slug}`)
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (this.props.tab !== newProps.tab) {
+      ReactGA.event({
+        category: "Movie",
+        action: "Switch tab",
+        label: newProps.tab
+      })
+    }
+  }
+
   render() {
-    const { userId, movie } = this.props
+    const { userId, movie, tab: activeTab } = this.props
     const {
       id,
+      slug,
       details,
       videos,
+      tags,
       votes_aggregate: { aggregate },
       favs
     } = movie
@@ -170,149 +194,182 @@ class Detail extends React.Component {
             <PosterItem {...movie} />
           </div>
         </FlexBrightBox>
+        {/*  TITLE  */}
         <FlexDimBox marginBottom={0}>
           <div style={{ width: "110px" }} />
           <h1>
             {movie.title}
             <span className="muted"> ({getYear(movie.release_date)})</span>
+            {tags && (
+              <Tags className="tags">
+                {tags.map((tag, ind) => (
+                  <span key={`tag-${ind}`} className="tag">
+                    {tag}
+                  </span>
+                ))}
+              </Tags>
+            )}
           </h1>
         </FlexDimBox>
-        <DetailDimBox>
-          <Desc>
-            <ButtonContainer>
-              <button
-                className={`button is-small ${userLike ? "is-danger" : ""} ${
-                  this.state.favLoading ? "is-loading" : ""
-                }`}
-                disabled={userId === -1 || this.state.favLoading}
-                onClick={async () => {
-                  this.toggleFavLoading()
-                  const { addFav, starToggler } = this.props.mutation
-                  let vars
-                  if (userFav.length === 0) {
-                    vars = {
-                      movieId: id,
-                      star: true,
-                      starredSince: getNow(),
-                      watched: false,
-                      watchedSince: null
-                    }
-                    await addFav.mutation({
-                      variables: vars
-                    })
-                    this.toggleFavLoading()
-                    return
+
+        {/*  FAV & WATCH  */}
+        <DetailDimBox marginBottom={0}>
+          <ButtonContainer>
+            <button
+              className={`button is-small ${userLike ? "is-danger" : ""} ${
+                this.state.favLoading ? "is-loading" : ""
+              }`}
+              disabled={userId === -1 || this.state.favLoading}
+              onClick={async () => {
+                this.toggleFavLoading()
+                const { addFav, starToggler } = this.props.mutation
+                let vars
+                if (userFav.length === 0) {
+                  vars = {
+                    movieId: id,
+                    star: true,
+                    starredSince: getNow(),
+                    watched: false,
+                    watchedSince: null
                   }
-                  await starToggler.mutation({
-                    variables: {
-                      id: userFav[0].id,
-                      star: !userLike,
-                      starredSince: userLike ? null : getNow()
-                    }
+                  await addFav.mutation({
+                    variables: vars
+                  })
+                  ReactGA.event({
+                    category: "Movie",
+                    action: `Add star`,
+                    value: id
                   })
                   this.toggleFavLoading()
-                }}
-              >
-                {ifttt(userLike, "Liked", "Like")}{" "}
-                {likeCount > 0 ? `${likeCount}` : ""}
-              </button>
-              <button
-                className={`button is-small ${hasWatched ? "is-danger" : ""} ${
-                  this.state.favLoading ? "is-loading" : ""
-                }`}
-                disabled={userId === -1 || this.state.favLoading}
-                onClick={async () => {
-                  this.toggleFavLoading()
-                  const { addFav, watchToggler } = this.props.mutation
-                  let vars
-                  if (userFav.length === 0) {
-                    vars = {
-                      movieId: id,
-                      star: false,
-                      starredSince: null,
-                      watched: true,
-                      watchedSince: getNow()
-                    }
-                    await addFav.mutation({
-                      variables: vars
-                    })
-
-                    this.toggleFavLoading()
-                    return
+                  return
+                }
+                await starToggler.mutation({
+                  variables: {
+                    id: userFav[0].id,
+                    star: !userLike,
+                    starredSince: userLike ? null : getNow()
                   }
+                })
 
-                  await watchToggler.mutation({
-                    variables: {
-                      id: userFav[0].id,
-                      watched: !hasWatched,
-                      watchedSince: hasWatched ? null : getNow()
-                    }
+                ReactGA.event({
+                  category: "Movie",
+                  action: `${userLike ? "Remove" : "Add"} star`,
+                  value: id
+                })
+                this.toggleFavLoading()
+              }}
+            >
+              {ifttt(userLike, "Liked", "Like")}{" "}
+              {likeCount > 0 ? `${likeCount}` : ""}
+            </button>
+            <button
+              className={`button is-small ${hasWatched ? "is-danger" : ""} ${
+                this.state.favLoading ? "is-loading" : ""
+              }`}
+              disabled={userId === -1 || this.state.favLoading}
+              onClick={async () => {
+                this.toggleFavLoading()
+                const { addFav, watchToggler } = this.props.mutation
+                let vars
+                if (userFav.length === 0) {
+                  vars = {
+                    movieId: id,
+                    star: false,
+                    starredSince: null,
+                    watched: true,
+                    watchedSince: getNow()
+                  }
+                  await addFav.mutation({
+                    variables: vars
                   })
 
+                  ReactGA.event({
+                    category: "Movie",
+                    action: `Add watch`,
+                    value: id
+                  })
                   this.toggleFavLoading()
-                }}
-              >
-                {ifttt(hasWatched, "Watched", "Watch")}{" "}
-                {watchCount > 0 ? `${watchCount}` : ""}
-              </button>
-            </ButtonContainer>
-            <span>
-              {videos.map(v => (
-                <div key={`v-${v.url}-${v.source}`} className="video">
-                  <a href={`https://youtu.be/${v.url}`}>
-                    <FontAwesome name="youtube-play" />
-                    <span>
-                      {v.kind} {v.source}
-                    </span>
-                  </a>
-                </div>
-              ))}
-            </span>
-            {aggregate.count > 0 && (
-              <span>
-                <FontAwesome name="star" />{" "}
-                {aggregate.avg.points.toFixed(1) || "0"}{" "}
-                <small className="muted">({aggregate.count} votes)</small>
-              </span>
-            )}
-            <span>
-              <em>Release date</em>: {movie.release_date}
-            </span>
-            {selDetail.language !== undefined && (
-              <>
-                <span>
-                  <em>Director</em>: <br />
-                  &nbsp;&nbsp;&nbsp;{selDetail.director || "-"}
-                </span>
-                <span>
-                  <em>Casts</em>: <br />
-                  &nbsp;&nbsp;&nbsp;{selDetail.cast || "-"}
-                </span>
-                <span>
-                  <em>Storyline</em>: <br />
-                  <ReactMarkdown source={selDetail.storyline || "-"} />
-                </span>
-              </>
-            )}
-          </Desc>
+                  return
+                }
+
+                await watchToggler.mutation({
+                  variables: {
+                    id: userFav[0].id,
+                    watched: !hasWatched,
+                    watchedSince: hasWatched ? null : getNow()
+                  }
+                })
+
+                ReactGA.event({
+                  category: "Movie",
+                  action: `${hasWatched ? "Remove" : "Add"} watch`,
+                  value: id
+                })
+                this.toggleFavLoading()
+              }}
+            >
+              {ifttt(hasWatched, "Watched", "Watch")}{" "}
+              {watchCount > 0 ? `${watchCount}` : ""}
+            </button>
+          </ButtonContainer>
         </DetailDimBox>
+
+        {/*  Tabs  */}
+        <FlexDimBox marginBottom={0} fontSize="0.8rem" padding="0">
+          <Tab
+            to={`/m/${id}-${slug}`}
+            active={activeTab !== "fav" && activeTab !== "nearby" ? 1 : 0}
+          >
+            Detail
+          </Tab>
+          <Tab to={`/m/${id}-${slug}/fav`} active={activeTab === "fav" ? 1 : 0}>
+            <FontAwesome name="film" /> @Fav
+          </Tab>
+          <Tab
+            to={`/m/${id}-${slug}/nearby`}
+            active={activeTab === "nearby" ? 1 : 0}
+          >
+            <FontAwesome name="film" /> @nearby
+          </Tab>
+        </FlexDimBox>
+
+        {activeTab !== "fav" && activeTab !== "nearby" && (
+          <DetailTab
+            videos={videos}
+            aggregate={aggregate}
+            selDetail={selDetail}
+            release_date={movie.release_date}
+          />
+        )}
+
+        {activeTab === "fav" && <FavTab userId={userId} movieId={id} />}
+        {activeTab === "nearby" && <NearbyTab movieId={id} />}
       </>
     )
   }
 }
 
+const extractMovieId = id => {
+  if (isNaN(id)) return id.split("-")[0]
+  return id
+}
+
 const MovieOne = props => (
   <MovieOps
-    variables={{ movieId: props.id, userId: props.basic.getUserId() || -1 }}
+    variables={{
+      movieId: extractMovieId(props.id),
+      userId: props.basic.getUserId() || -1
+    }}
   >
     {({ addFav, starToggler, watchToggler, movie: { result } }) => {
-      const { loading, data, error } = result
+      const { loading, data } = result
 
       if (loading) return <Loading />
       if (!data || !data.movie_movie) return <ListItemBlank />
       const mov = data.movie_movie[0]
       return (
         <Detail
+          tab={props.tab}
           movie={mov}
           userId={props.basic.getUserId()}
           mutation={{ addFav, starToggler, watchToggler }}

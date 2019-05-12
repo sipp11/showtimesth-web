@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import FontAwesome from "react-fontawesome"
+import ReactGA from "react-ga"
 import { API_URL } from "../config"
 
 export default class OAuth extends Component {
@@ -17,6 +18,11 @@ export default class OAuth extends Component {
     socket.on(provider, user => {
       this.setState({ user })
       basic.savePassport(user)
+      ReactGA.event({
+        category: "Login",
+        action: `Success with`,
+        label: provider
+      })
       const { popup } = this
       if (popup && !popup.closed) {
         this.popup.close()
@@ -47,6 +53,12 @@ export default class OAuth extends Component {
     const top = window.innerHeight / 2 - height / 2
     const url = `${API_URL}/auth/${provider}`
     const query = `?socketId=${socket.id}&provider=${provider}`
+
+    ReactGA.event({
+      category: "Login",
+      action: `Connect to`,
+      label: provider
+    })
 
     return window.open(
       `${url}${query}`,

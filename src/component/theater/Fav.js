@@ -6,18 +6,19 @@ import { Subscribe } from "unstated"
 import BasicContainer from "../../unstated/basic"
 import { ListItem } from "../../lib/piece"
 import Loading from "../Loading"
+import ListItemBlank from "../ListItemBlank"
 
-const FAV_MOVIES = gql`
-  query FAV_MOVIES($userId: Int) {
+export const FAV_THEATERS = gql`
+  query FAV_THEATERS($userId: Int) {
     people_favtheater(
       where: { user_id: { _eq: $userId } }
       order_by: { theater: { english: asc } }
     ) {
       theater {
         id
+        slug
         thai
         english
-        slug
         tel
       }
     }
@@ -25,7 +26,7 @@ const FAV_MOVIES = gql`
 `
 
 export const TheaterListItem = props => (
-  <Link to={`/t/${props.theater.id}`}>
+  <Link to={`/t/${props.theater.id}-${props.theater.slug}`}>
     <ListItem>
       <article>
         <div className="content">
@@ -41,14 +42,18 @@ export const TheaterListItem = props => (
 )
 
 const FavTheater = props => (
-  <Query query={FAV_MOVIES} variables={{ userId: props.basic.getUserId() }}>
-    {({ loading, error, data }) => {
+  <Query query={FAV_THEATERS} variables={{ userId: props.basic.getUserId() }}>
+    {({ loading, data }) => {
       if (loading) return <Loading />
-      if (!data || !data.people_favtheater) return <div>No data yet</div>
+      if (!data || !data.people_favtheater)
+        return <ListItemBlank message="ยังไม่มีโรงหนังที่ Fav ไว้" />
       return (
         <>
           {data.people_favtheater.map(ele => (
-            <TheaterListItem theater={ele.theater} />
+            <TheaterListItem
+              key={`tfav-${ele.theater.id}`}
+              theater={ele.theater}
+            />
           ))}
         </>
       )

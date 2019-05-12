@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { Subscribe } from "unstated"
 import styled from "styled-components"
+import ReactGA from "react-ga"
 import BasicContainer from "../unstated/basic"
 import OAuth from "../component/OAuth"
 import { PROVIDERS } from "../config"
@@ -15,6 +16,9 @@ const Box = styled.div`
 `
 
 class LoginPage extends Component {
+  componentDidMount() {
+    ReactGA.pageview("/login")
+  }
   componentWillMount() {
     const { basic, history } = this.props
     if (basic.state.token !== null) {

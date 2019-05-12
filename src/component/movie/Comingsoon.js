@@ -3,14 +3,17 @@ import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import fecha from "fecha"
 import styled from "styled-components"
+import ReactGA from "react-ga"
 import PosterItem from "./PosterItem"
-import Loading from "../Loading"
 import { getWeek } from "../../lib/dt"
+import Loading from "../Loading"
+import ListItemBlank from "../ListItemBlank"
 
 const COMINGSOON_MOVIES = gql`
   query COMINGSOON_MOVIES($day: date!, $offset: Int!) {
     comingsoon_movies(args: { day: $day }, limit: 30, offset: $offset) {
       id
+      slug
       title
       release_date
       language
@@ -40,58 +43,137 @@ const PosterBox = styled.div`
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
-
   margin-bottom: 2rem;
 `
 
 const weekWord = wk => {
+  if (wk > 52) return "Next year"
   if (wk === 0) return "This week"
   if (wk === 1) return "Next week"
   return `Next ${wk} weeks`
 }
 
-const ComingSoon = () => (
-  <Query
-    query={COMINGSOON_MOVIES}
-    variables={{ day: fecha.format(new Date(), "YYYY-MM-DD"), offset: 0 }}
-  >
-    {({ loading, error, data }) => {
-      if (loading) return <Loading />
-      if (!data || !data.comingsoon_movies) return <div>No data yet</div>
+class ComingSoon extends React.Component {
+  now = new Date()
+  today = fecha.format(this.now, "YYYY-MM-DD")
+  state = {
+    items: [],
+    bottomReached: false,
+    lastOffset: -1
+  }
 
-      const thisWeek = getWeek(new Date())
-      let coll = {}
-      data.comingsoon_movies.map(ele => {
-        const wk = getWeek(ele.release_date)
-        if (!coll[wk]) coll[wk] = []
+  isBottom(el) {
+    return el.getBoundingClientRect().bottom <= window.innerHeight
+  }
 
-        coll[wk].push(ele)
-        return null
+  componentDidMount() {
+    document.addEventListener("scroll", this.trackScrolling)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("scroll", this.trackScrolling)
+  }
+
+  trackScrolling = () => {
+    const wrappedElement = document.getElementById("weekly-box")
+    if (this.isBottom(wrappedElement)) {
+      this.setState({ bottomReached: true })
+      document.removeEventListener("scroll", this.trackScrolling)
+    }
+  }
+
+  resetTrackingScrolling = (fetchMore, offset) => {
+    const { lastOffset } = this.state
+    ReactGA.event({
+      category: "Movie",
+      action: "Load more",
+      label: "comingsoon"
+    })
+    setTimeout(() => {
+      this.setState({ bottomReached: false, lastOffset: offset })
+      if (lastOffset === offset) return
+
+      fetchMore({
+        variables: {
+          day: this.today,
+          offset: offset
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev
+          return Object.assign({}, prev, {
+            comingsoon_movies: [
+              ...prev.comingsoon_movies,
+              ...fetchMoreResult.comingsoon_movies
+            ]
+          })
+        }
       })
+      // delay again not to track scrolling until new one arrived
+      setTimeout(() => {
+        if (lastOffset !== offset)
+          document.addEventListener("scroll", this.trackScrolling)
+      }, 1500)
+    }, 100)
+  }
 
-      return (
-        <WeeklyBox>
-          {Object.keys(coll).map(wk => {
-            return (
-              <div key={`wk-${wk}`}>
-                <h1>{weekWord(wk - thisWeek)}</h1>
-                <PosterBox>
-                  {coll[wk].map(ele => (
-                    <PosterItem
-                      key={`p-${ele.id}`}
-                      {...ele}
-                      show={true}
-                      value={ele.release_date}
-                    />
-                  ))}
-                </PosterBox>
-              </div>
-            )
-          })}
-        </WeeklyBox>
-      )
-    }}
-  </Query>
-)
+  render() {
+    const { bottomReached } = this.state
+    return (
+      <Query
+        query={COMINGSOON_MOVIES}
+        variables={{
+          day: this.today,
+          offset: 0
+        }}
+      >
+        {({ loading, error, data, fetchMore }) => {
+          if (error) return <ListItemBlank message="error" />
+          if (!data || !data.comingsoon_movies)
+            return <ListItemBlank message="No data yet" />
+
+          const { comingsoon_movies } = data
+          if (bottomReached) {
+            this.resetTrackingScrolling(fetchMore, comingsoon_movies.length)
+          }
+
+          // process movies into weekly
+          const thisWeek = getWeek(this.now)
+          let coll = {}
+          comingsoon_movies.map(ele => {
+            const wk = getWeek(ele.release_date)
+            const diffWk = wk - thisWeek
+            const key = diffWk < 52 ? diffWk : 99
+            if (!coll[key]) coll[key] = { label: weekWord(diffWk), items: [] }
+            coll[key].items.push(ele)
+            return null
+          })
+
+          return (
+            <WeeklyBox id="weekly-box">
+              {Object.keys(coll).map(wk => {
+                return (
+                  <div key={`wk-${wk}`}>
+                    <h1>{coll[wk].label}</h1>
+                    <PosterBox>
+                      {coll[wk].items.map(ele => (
+                        <PosterItem
+                          key={`p-${ele.id}`}
+                          {...ele}
+                          show={true}
+                          value={ele.release_date}
+                        />
+                      ))}
+                    </PosterBox>
+                  </div>
+                )
+              })}
+              {loading && <Loading />}
+            </WeeklyBox>
+          )
+        }}
+      </Query>
+    )
+  }
+}
 
 export default ComingSoon

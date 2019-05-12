@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
+import ReactGA from "react-ga"
 import Navbar from "../component/Navbar"
 import { PageContainer } from "../lib/piece"
 import Result from "../component/search/Result"
@@ -20,37 +21,48 @@ class SearchPage extends Component {
   state = {
     loading: false,
     query: "",
-
     viewport: {}
   }
 
   recordLivePosition = position => {
-    this.setState({
-      viewport: {
-        coords: {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude
-        },
-        timestamp: position.timestamp
-      }
-    })
+    // don't update if it's too recent. Only 1 min at a time
+    const { viewport } = this.state
+    if (
+      viewport.timestamp === undefined ||
+      position.timestamp - viewport.timestamp > 60 * 1000
+    ) {
+      this.setState({
+        viewport: {
+          coords: {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          },
+          timestamp: position.timestamp
+        }
+      })
+    }
   }
 
   componentDidMount() {
     this.nameInput.focus()
+    ReactGA.pageview(`/search`)
 
     navigator.geolocation.getCurrentPosition(
       position => {
         this.recordLivePosition(position)
       },
-      error => console.log("nav.position", error),
+      error => {
+        //console.log("nav.position", error)
+      },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 }
     )
     this.watchID = navigator.geolocation.watchPosition(
       position => {
         this.recordLivePosition(position)
       },
-      error => console.log("nav.position", error)
+      error => {
+        //console.log("nav.position", error)
+      }
     )
   }
 
@@ -64,11 +76,20 @@ class SearchPage extends Component {
 
   handleInputChange = e => {
     this.setState({ query: e.target.value.trim() })
+    /* ReactGA.event({
+      category: "Search",
+      action: "Search with text",
+      value: e.target.value.trim()
+    }) */
   }
 
   activateNearBySearch = () => {
     this.nameInput.value = "#nearby"
     this.setState({ query: "#nearby" })
+    ReactGA.event({
+      category: "Search",
+      action: "Search nearby"
+    })
   }
 
   render() {

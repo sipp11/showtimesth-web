@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import FontAwesome from "react-fontawesome"
 import styled from "styled-components"
+import ReactGA from "react-ga"
 import NowShowing from "../component/movie/Nowshowing"
 import Navbar from "../component/Navbar"
 import { PageContainer } from "../lib/piece"
@@ -13,13 +14,16 @@ const HeaderLink = styled(props => <Link {...props} />)`
 
   color: #808a96;
 
-  :hover {
-    color: #e3e3e3;
+  @media screen and (min-width: 450px) {
+    :hover {
+      color: #e3e3e3;
+    }
   }
 `
 
 class AppPage extends Component {
   renderComingSoon() {
+    ReactGA.pageview("/comingsoon")
     return (
       <>
         <h1>
@@ -31,6 +35,7 @@ class AppPage extends Component {
     )
   }
   renderNowShowing() {
+    ReactGA.pageview("/")
     return (
       <>
         <h1>

@@ -5,12 +5,13 @@ import { PageContainer } from "../lib/piece"
 
 class MoviePage extends Component {
   render() {
-    const { id } = this.props.match.params
+    const { params } = this.props.match
+    const { id } = params
     return (
       <PageContainer>
         <Navbar />
         {!id && <span>Should be a list and search, huh?</span>}
-        {id && <One id={id} />}
+        {id && <One {...params} />}
       </PageContainer>
     )
   }

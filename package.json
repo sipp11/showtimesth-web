@@ -17,6 +17,7 @@
     "react-apollo": "^2.5.5",
     "react-dom": "^16.8.6",
     "react-fontawesome": "^1.6.1",
+    "react-ga": "^2.5.7",
     "react-markdown": "^4.0.8",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",

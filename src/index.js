@@ -10,11 +10,15 @@ import { setContext } from "apollo-link-context"
 import { InMemoryCache } from "apollo-cache-inmemory"
 import { createUploadLink } from "apollo-upload-client"
 import { ApolloProvider } from "react-apollo"
+import ReactGA from "react-ga"
 import * as serviceWorker from "./serviceWorker"
 import BasicContainer from "./unstated/basic"
 import { getUserId, getUserRole } from "./lib/jwt"
 
 UNSTATED.logStateChanges = process.env.NODE_ENV !== "production"
+ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID, {
+  debug: process.env.NODE_ENV !== "production"
+})
 
 let basic = new BasicContainer({
   initialToken: localStorage.getItem("token") || null,
@@ -34,6 +38,8 @@ const authLink = setContext((_, { headers }) => {
   if (!token) return headers
   // supported roles: user, mod // God has no power here!
   const role = getUserRole(token)
+  const userId = getUserId(token)
+  ReactGA.set({ userId })
   return {
     headers: {
       ...headers,

@@ -11,6 +11,7 @@ const MOVIE_QUERY = gql`
       release_date
       duration
       tags
+      slug
       videos(order_by: { source: desc }, limit: 2) {
         kind
         type

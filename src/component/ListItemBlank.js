@@ -3,7 +3,9 @@ import React from "react"
 import { DimBox } from "../lib/piece"
 
 const ListItemBlank = props => (
-  <DimBox center={true}>{props.message || "ไม่มีข้อมูล"}</DimBox>
+  <DimBox {...props} center={true}>
+    {props.message || "ไม่มีข้อมูล"}
+  </DimBox>
 )
 
 export default ListItemBlank

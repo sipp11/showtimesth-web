@@ -2,11 +2,85 @@ import React from "react"
 import { Query, Mutation } from "react-apollo"
 import gql from "graphql-tag"
 import { adopt } from "react-adopt"
+import { FAV_THEATERS } from "./Fav"
+
+export const FAV_THEATER_AND_A_MOVIE = gql`
+  query FAV_THEATER_AND_A_MOVIE($userId: Int!, $movieId: Int!, $day: date) {
+    people_favtheater(
+      where: { user_id: { _eq: $userId } }
+      order_by: { theater: { english: asc } }
+    ) {
+      theater {
+        id
+        slug
+        thai
+        english
+        point
+        showtimes(
+          where: { date: { _eq: $day }, movie_id: { _eq: $movieId } }
+          order_by: { audio: asc, screen: asc }
+        ) {
+          audio
+          caption
+          screen
+          time
+          technology
+        }
+      }
+    }
+  }
+`
+
+export const favTheaterAndAMovieTime = ({ variables, render }) => (
+  <Query query={FAV_THEATER_AND_A_MOVIE} variables={variables}>
+    {result => render({ result })}
+  </Query>
+)
+
+export const NEARBY_THEATERS_AND_A_MOVIE = gql`
+  query NEARBY_THEATERS_AND_A_MOVIE(
+    $lat: float8!
+    $lon: float8!
+    $offset: Int
+    $limit: Int
+    $movieId: Int!
+    $day: date
+  ) {
+    nearby_theaters(
+      args: { lat: $lat, lon: $lon }
+      offset: $offset
+      limit: $limit
+    ) {
+      id
+      slug
+      english
+      thai
+      point
+      showtimes(
+        where: { date: { _eq: $day }, movie_id: { _eq: $movieId } }
+        order_by: { audio: asc, screen: asc }
+      ) {
+        audio
+        caption
+        screen
+        time
+        technology
+      }
+    }
+  }
+`
+
+export const nearbyTheatersAndAMovieTime = ({ variables, render }) => (
+  <Query query={NEARBY_THEATERS_AND_A_MOVIE} variables={variables}>
+    {result => render({ result })}
+  </Query>
+)
 
 const THEATER_QUERY = gql`
   query THEATER_QUERY($theaterId: Int!, $day: date, $userId: Int) {
     theater_theater(where: { id: { _eq: $theaterId } }) {
       id
+      slug
       english
       thai
       tel
@@ -76,6 +150,12 @@ const addFav = ({ variables, render }) => (
       {
         query: THEATER_QUERY,
         variables
+      },
+      {
+        query: FAV_THEATERS,
+        variables: {
+          userId: variables.userId
+        }
       }
     ]}
   >
@@ -98,6 +178,12 @@ const unFav = ({ variables, render }) => (
       {
         query: THEATER_QUERY,
         variables
+      },
+      {
+        query: FAV_THEATERS,
+        variables: {
+          userId: variables.userId
+        }
       }
     ]}
   >

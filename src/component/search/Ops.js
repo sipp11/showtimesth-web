@@ -53,6 +53,7 @@ const MOVIE_SEARCH = gql`
   query MOVIE_SEARCH($pattern: String!, $offset: Int) {
     movie_search(args: { _pattern: $pattern }, offset: $offset) {
       id
+      slug
       title
       release_date
       tags
