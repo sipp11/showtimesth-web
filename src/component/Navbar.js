@@ -50,7 +50,9 @@ const Navbar = props => (
     <Box>
       <BoxItem>
         <Link to="/" className="navbar-item">
-          Home
+          &nbsp;
+          <FontAwesome name={"home"} />
+          &nbsp;
         </Link>
       </BoxItem>
       {!props.basic.state.token && (
@@ -80,15 +82,16 @@ const Navbar = props => (
           <BoxItem>
             <Link to="/me" className="navbar-item">
               <FontAwesome name={"user"} />
-              &nbsp;{props.basic.state.username}
+              &nbsp;Me
             </Link>
           </BoxItem>
         </>
       )}
       <BoxItem>
         <Link to="/search" className="navbar-item">
+          &nbsp;
           <FontAwesome name="search" />
-          &nbsp;&nbsp;
+          &nbsp;
         </Link>
       </BoxItem>
     </Box>

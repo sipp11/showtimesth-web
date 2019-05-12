@@ -17,9 +17,9 @@ import { getUserId, getUserRole } from "./lib/jwt"
 UNSTATED.logStateChanges = process.env.NODE_ENV !== "production"
 
 let basic = new BasicContainer({
-  initialToken: sessionStorage.getItem("token") || null,
-  initialUsername: sessionStorage.getItem("username") || null,
-  initialRoles: sessionStorage.getItem("roles") || null
+  initialToken: localStorage.getItem("token") || null,
+  initialUsername: localStorage.getItem("username") || null,
+  initialRoles: localStorage.getItem("roles") || null
 })
 
 const uploadLink = createUploadLink({
@@ -29,7 +29,7 @@ const uploadLink = createUploadLink({
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = sessionStorage.getItem("token")
+  const token = localStorage.getItem("token")
   // return the headers to the context so httpLink can read them
   if (!token) return headers
   // supported roles: user, mod // God has no power here!
@@ -64,4 +64,4 @@ ReactDOM.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister()
+serviceWorker.register()

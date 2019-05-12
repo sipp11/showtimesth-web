@@ -13,14 +13,14 @@ class BasicContainer extends Container {
 
   savePassport = user => {
     const { username, roles, token } = user
-    sessionStorage.setItem("token", token)
-    sessionStorage.setItem("username", username)
-    sessionStorage.setItem("roles", roles.join(","))
+    localStorage.setItem("token", token)
+    localStorage.setItem("username", username)
+    localStorage.setItem("roles", roles.join(","))
     this.setState({ ...user })
   }
 
   saveToken = token => {
-    sessionStorage.setItem("token", token)
+    localStorage.setItem("token", token)
     this.setState({ token })
   }
 
@@ -35,7 +35,7 @@ class BasicContainer extends Container {
       username: null,
       roles: null
     })
-    sessionStorage.clear()
+    localStorage.clear()
     if (client) client.resetStore()
   }
 }

@@ -26,6 +26,29 @@ export const theaterSearch = ({ variables, theaterSkip, render }) => (
   </Query>
 )
 
+const NEARBY_THEATERS = gql`
+  query NEARBY_THEATERS($lat: Float!, $lon: Float!, $offset: Int) {
+    nearby_theaters(args: {lat: $lat, lon: $lon}, offset: $offset) {
+      chain {
+        code
+        english
+        thai
+      }
+      id
+      slug
+      english
+      thai
+      point
+    }
+  }
+`
+
+export const nearbyTheaters = ({ variables, nearbySkip, render }) => (
+  <Query query={NEARBY_THEATERS} variables={variables} skip={nearbySkip}>
+    {result => render({ result })}
+  </Query>
+)
+
 const MOVIE_SEARCH = gql`
   query MOVIE_SEARCH($pattern: String!, $offset: Int) {
     movie_search(args: { _pattern: $pattern }, offset: $offset) {
@@ -59,5 +82,6 @@ export const movieSearch = ({ variables, movieSkip, render }) => (
 
 export const SearchOps = adopt({
   theaterSearch,
-  movieSearch
+  movieSearch,
+  nearbyTheaters
 })
