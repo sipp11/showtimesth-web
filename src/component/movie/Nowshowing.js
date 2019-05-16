@@ -4,7 +4,8 @@ import gql from "graphql-tag"
 import fecha from "fecha"
 import styled from "styled-components"
 import PosterItem from "./PosterItem"
-import Loading from '../Loading'
+import Loading from "../Loading"
+import ListItemBlank from "../ListItemBlank"
 
 const NOWSHOWING_MOVIES = gql`
   query NOWSHOWING_MOVIES($day: date!) {
@@ -37,7 +38,8 @@ const NowShowingMovies = () => (
   >
     {({ loading, error, data }) => {
       if (loading) return <Loading />
-      if (!data || !data.nowshowing_movies) return <div>No data yet</div>
+      if (!data || !data.nowshowing_movies)
+        return <ListItemBlank message="No data yet" />
       return (
         <PosterBox>
           {data.nowshowing_movies.map(ele => (
