@@ -4,7 +4,7 @@ import Loading from "../Loading"
 import ListItemBlank from "../ListItemBlank"
 import { TheaterListItem } from "../theater/Fav"
 
-const TheaterResult = props => (
+export const TheaterResult = props => (
   <>
     {props.theaters.map(ele => (
       <TheaterListItem key={`tr-${ele.id}`} theater={ele} />

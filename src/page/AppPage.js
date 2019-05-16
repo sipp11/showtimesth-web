@@ -7,6 +7,8 @@ import NowShowing from "../component/movie/Nowshowing"
 import Navbar from "../component/Navbar"
 import { PageContainer } from "../lib/piece"
 import ComingSoon from "../component/movie/Comingsoon"
+import Chain from "../component/theater/Chain"
+import List from "../component/theater/List"
 
 const HeaderLink = styled(props => <Link {...props} />)`
   margin-left: 1.2rem;
@@ -35,7 +37,7 @@ class AppPage extends Component {
     )
   }
   renderNowShowing() {
-    ReactGA.pageview("/")
+    ReactGA.pageview("/nowshowing")
     return (
       <>
         <h1>
@@ -47,13 +49,25 @@ class AppPage extends Component {
     )
   }
 
+  renderTheaterList(_, subpage) {
+    ReactGA.pageview(`/list${subpage === undefined ? `/${subpage}` : ""}`)
+    return (
+      <>
+        {!subpage && <Chain />}
+        {subpage && <List subpage={subpage} />}
+      </>
+    )
+  }
+
   render() {
-    const { page } = this.props.match.params
+    const { page, subpage } = this.props.match.params
+    const isNowshowing = page === undefined || page === "nowshowing"
     return (
       <PageContainer>
         <Navbar />
+        {isNowshowing && this.renderNowShowing()}
         {page === "comingsoon" && this.renderComingSoon()}
-        {page !== "comingsoon" && this.renderNowShowing()}
+        {page === "list" && this.renderTheaterList(this, subpage)}
       </PageContainer>
     )
   }

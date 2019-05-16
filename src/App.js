@@ -72,6 +72,7 @@ const App = () => (
     <Route path="/search" component={SearchPage} />
     <Route path="/fav" component={FavPage} />
     <Route path="/me" component={UserPage} />
+    <Route path="/:page/:subpage" component={AppPage} />
     <Route path="/:page" component={AppPage} />
     <Route path="/" component={AppPage} />
     <Route component={Page404} />

@@ -202,13 +202,9 @@ class Detail extends React.Component {
         >
           <ul>
             <li>
-              <a href="#">{chain.english}</a>
+              <Link to={`/list/${chain.code}`}>{chain.english}</Link>
             </li>
-            <li className="is-active">
-              <a href="#" aria-current="page">
-                {english}
-              </a>
-            </li>
+            <li className="is-active">&nbsp;&nbsp;&nbsp;{english}</li>
           </ul>
         </Breadcrum>
         <BrightBox>
