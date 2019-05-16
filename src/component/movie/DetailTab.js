@@ -1,4 +1,5 @@
 import React from "react"
+import ReactGA from "react-ga"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import ReactMarkdown from "react-markdown"
@@ -52,12 +53,16 @@ const DetailTab = props => {
         <VideoContainer>
           {videos.map(v => (
             <div key={`v-${v.url}-${v.source}`} className="video">
-              <a href={`https://youtu.be/${v.url}`}>
+              <ReactGA.OutboundLink
+                eventLabel={`youtube`}
+                to={`https://youtu.be/${v.url}`}
+                target="_blank"
+              >
                 <FontAwesome name="youtube-play" />
                 <span>
                   {v.kind} {v.source}
                 </span>
-              </a>
+              </ReactGA.OutboundLink>
             </div>
           ))}
         </VideoContainer>

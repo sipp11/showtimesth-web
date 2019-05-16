@@ -36,7 +36,7 @@ const NowShowingMovies = () => (
     query={NOWSHOWING_MOVIES}
     variables={{ day: fecha.format(new Date(), "YYYY-MM-DD") }}
   >
-    {({ loading, error, data }) => {
+    {({ loading, data }) => {
       if (loading) return <Loading />
       if (!data || !data.nowshowing_movies)
         return <ListItemBlank message="No data yet" />
