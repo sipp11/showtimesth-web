@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { Subscribe } from "unstated"
 import ReactGA from "react-ga"
 import Loading from "../Loading"
+import GoogleAds from "../GoogleAds"
 import BasicContainer from "../../unstated/basic"
 import { imgSrc } from "../../lib/posterImage"
 import { getYear, getToday } from "../../lib/dt"
@@ -268,8 +269,18 @@ class Detail extends React.Component {
           <DimBox center={true}>ยังไม่มีข้อมูลรอบหนัง</DimBox>
         )}
 
-        {Object.keys(m).map(key => (
-          <MovieScreenAndTime key={`mst-${id}-${key}`} one={m[key]} />
+        {Object.keys(m).map((key, ind) => (
+          <>
+            {ind % 10 === 2 && (
+              <GoogleAds
+                key={`msat-${ind}`}
+                format="fluid"
+                layoutKey="-gc+3r+68-9q-29"
+                slot="8148389196"
+              />
+            )}
+            <MovieScreenAndTime key={`mst-${id}-${key}`} one={m[key]} />
+          </>
         ))}
       </>
     )
