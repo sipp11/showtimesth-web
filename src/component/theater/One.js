@@ -215,7 +215,7 @@ class Detail extends React.Component {
                 <FontAwesome name="phone" /> {tel}
               </span>
             )}
-            {tel && (
+            {location && (
               <span>
                 <FontAwesome name="map-marker" /> {location}
               </span>
@@ -290,7 +290,7 @@ const TheaterOne = props => (
     }}
   >
     {({ addFav, unFav, theater: { result } }) => {
-      const { loading, data, error } = result
+      const { loading, data } = result
 
       if (loading) return <Loading />
       if (!data || !data.theater_theater) return <ListItemBlank />

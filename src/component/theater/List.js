@@ -8,6 +8,7 @@ import Loading from "../Loading"
 import { TheaterResult } from "../search/Result"
 import { Breadcrum } from "../../lib/piece"
 
+
 const THEATER_OF_CHAIN_QUERY = gql`
   query THEATER_OF_CHAIN_QUERY($chainCode: String!, $offset: Int!) {
     theater_theatergroup(where: { code: { _eq: $chainCode } }) {

@@ -1,7 +1,7 @@
 {
   "name": "stth-web",
-  "version": "1.0.0",
-  "versionDate": "2019-05-17",
+  "version": "1.0.1",
+  "versionDate": "2019-05-19",
   "private": true,
   "dependencies": {
     "apollo-cache-inmemory": "^1.5.1",
@@ -31,7 +31,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev_publish": "node script/publish_10z"
+    "dev_publish": "node script/publish_10z",
+    "prod_publish": "node script/publish_prod"
   },
   "eslintConfig": {
     "extends": "react-app"

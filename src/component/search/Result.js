@@ -1,13 +1,24 @@
 import React from "react"
 import { SearchOps } from "./Ops"
 import Loading from "../Loading"
+import GoogleAds from "../GoogleAds"
 import ListItemBlank from "../ListItemBlank"
 import { TheaterListItem } from "../theater/Fav"
 
 export const TheaterResult = props => (
   <>
-    {props.theaters.map(ele => (
-      <TheaterListItem key={`tr-${ele.id}`} theater={ele} />
+    {props.theaters.map((ele, ind) => (
+      <>
+        {ind % 10 === 4 && (
+          <GoogleAds
+            key={`tr-ads-${ind}`}
+            format="fluid"
+            layoutKey="-hb-7+2h-1m-4u"
+            slot="6589741428"
+          />
+        )}
+        <TheaterListItem key={`tr-${ele.id}`} theater={ele} />
+      </>
     ))}
   </>
 )

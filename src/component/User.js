@@ -54,7 +54,11 @@ const UserProfile = props => (
           {user.profile_url && (
             <div>
               <figure className="image is-128x128">
-                <img className="is-rounded" src={`${user.profile_url}`} />
+                <img
+                  alt="profile"
+                  className="is-rounded"
+                  src={`${user.profile_url}`}
+                />
               </figure>
             </div>
           )}

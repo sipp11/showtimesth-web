@@ -61,13 +61,16 @@ class AppPage extends Component {
 
   render() {
     const { page, subpage } = this.props.match.params
-    const isNowshowing = page === undefined || page === "nowshowing"
+    let child = this.renderNowShowing()
+    if (page === "comingsoon") {
+      child = this.renderComingSoon()
+    } else if (page === "list") {
+      child = this.renderTheaterList(this, subpage)
+    }
     return (
       <PageContainer>
         <Navbar />
-        {isNowshowing && this.renderNowShowing()}
-        {page === "comingsoon" && this.renderComingSoon()}
-        {page === "list" && this.renderTheaterList(this, subpage)}
+        {child}
       </PageContainer>
     )
   }
