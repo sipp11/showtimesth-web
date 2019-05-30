@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Fragment } from "react"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import { Link } from "react-router-dom"
@@ -270,17 +270,16 @@ class Detail extends React.Component {
         )}
 
         {Object.keys(m).map((key, ind) => (
-          <>
+          <Fragment key={`msat-frgmt-${ind}`}>
             {ind % 10 === 2 && (
               <GoogleAds
-                key={`msat-${ind}`}
                 format="fluid"
                 layoutKey="-gc+3r+68-9q-29"
                 slot="8148389196"
               />
             )}
-            <MovieScreenAndTime key={`mst-${id}-${key}`} one={m[key]} />
-          </>
+            <MovieScreenAndTime one={m[key]} />
+          </Fragment>
         ))}
       </>
     )

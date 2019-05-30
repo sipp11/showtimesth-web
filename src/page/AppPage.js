@@ -50,7 +50,7 @@ class AppPage extends Component {
   }
 
   renderTheaterList(_, subpage) {
-    ReactGA.pageview(`/list${subpage === undefined ? `/${subpage}` : ""}`)
+    ReactGA.pageview(`/list${subpage !== undefined ? `/${subpage}` : ""}`)
     return (
       <>
         {!subpage && <Chain />}
