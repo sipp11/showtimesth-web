@@ -24,6 +24,7 @@ export default class GoogleAds extends Component {
   }
 
   render() {
+    if (!process.env.REACT_APP_AD_CLIENT) return null
     return (
       <ins
         className={`adsbygoogle ${this.props.className}`}

@@ -14,6 +14,7 @@ import ListItemBlank from "../ListItemBlank"
 import DetailTab from "./DetailTab"
 import FavTab from "./FavTab"
 import NearbyTab from "./NearbyTab"
+import AnywhereTab from "./AnywhereTab"
 
 const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   display: flex;
@@ -318,7 +319,13 @@ class Detail extends React.Component {
         <FlexDimBox marginBottom={0} fontSize="0.8rem" padding="0">
           <Tab
             to={`/m/${id}-${slug}`}
-            active={activeTab !== "fav" && activeTab !== "nearby" ? 1 : 0}
+            active={
+              activeTab !== "fav" &&
+              activeTab !== "nearby" &&
+              activeTab !== "anywhere"
+                ? 1
+                : 0
+            }
           >
             Detail
           </Tab>
@@ -331,19 +338,28 @@ class Detail extends React.Component {
           >
             <FontAwesome name="film" /> @nearby
           </Tab>
+          <Tab
+            to={`/m/${id}-${slug}/anywhere`}
+            active={activeTab === "anywhere" ? 1 : 0}
+          >
+            <FontAwesome name="film" /> @anywhere
+          </Tab>
         </FlexDimBox>
 
-        {activeTab !== "fav" && activeTab !== "nearby" && (
-          <DetailTab
-            videos={videos}
-            aggregate={aggregate}
-            selDetail={selDetail}
-            release_date={movie.release_date}
-          />
-        )}
+        {activeTab !== "fav" &&
+          activeTab !== "nearby" &&
+          activeTab !== "anywhere" && (
+            <DetailTab
+              videos={videos}
+              aggregate={aggregate}
+              selDetail={selDetail}
+              release_date={movie.release_date}
+            />
+          )}
 
         {activeTab === "fav" && <FavTab userId={userId} movieId={id} />}
         {activeTab === "nearby" && <NearbyTab movieId={id} />}
+        {activeTab === "anywhere" && <AnywhereTab movieId={id} />}
       </>
     )
   }

@@ -37,6 +37,53 @@ export const favTheaterAndAMovieTime = ({ variables, render }) => (
   </Query>
 )
 
+export const THEATERS_WITH_A_MOVIE = gql`
+  query THEATERS_WITH_A_MOVIE(
+    $offset: Int
+    $limit: Int
+    $movieId: Int!
+    $day: date
+  ) {
+    theater_theater(
+      where: {
+        showtimes: {
+          _and: { date: { _eq: $day }, movie_id: { _eq: $movieId } }
+        }
+      }
+      order_by: { id: asc }
+      offset: $offset
+      limit: $limit
+    ) {
+      id
+      slug
+      english
+      thai
+      showtimes(
+        where: { _and: { date: { _eq: $day }, movie_id: { _eq: $movieId } } }
+        order_by: { audio: asc, screen: asc }
+      ) {
+        movie {
+          id
+          slug
+        }
+        id
+        date
+        audio
+        caption
+        screen
+        time
+        technology
+      }
+    }
+  }
+`
+
+export const theatersWithAMovieTime = ({ variables, render }) => (
+  <Query query={THEATERS_WITH_A_MOVIE} variables={variables}>
+    {result => render({ result })}
+  </Query>
+)
+
 export const NEARBY_THEATERS_AND_A_MOVIE = gql`
   query NEARBY_THEATERS_AND_A_MOVIE(
     $lat: float8!
