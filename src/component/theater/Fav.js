@@ -45,7 +45,7 @@ const FavTheater = props => (
   <Query query={FAV_THEATERS} variables={{ userId: props.basic.getUserId() }}>
     {({ loading, data }) => {
       if (loading) return <Loading />
-      if (!data || !data.people_favtheater)
+      if (!data || data.people_favtheater.length === 0)
         return <ListItemBlank message="ยังไม่มีโรงหนังที่ Fav ไว้" />
       return (
         <>
