@@ -7,6 +7,7 @@ import OAuth from "../component/OAuth"
 import { PROVIDERS } from "../config"
 import { PageContainer } from "../lib/piece"
 import Navbar from "../component/Navbar"
+import { version, versionDate } from "../../package.json"
 import "./LoginPage.css"
 
 const Box = styled.div`
@@ -42,6 +43,7 @@ class LoginPage extends Component {
       <PageContainer>
         <Navbar />
         <h1>Login</h1>
+
         <Box className="login-page">
           {PROVIDERS.map(provider => (
             <OAuth
@@ -51,6 +53,12 @@ class LoginPage extends Component {
               basic={basic}
             />
           ))}
+        </Box>
+
+        <Box>
+          <small className="muted">
+            v{version}-{versionDate}
+          </small>
         </Box>
       </PageContainer>
     )
