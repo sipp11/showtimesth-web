@@ -5,6 +5,7 @@ import fecha from "fecha"
 import styled from "styled-components"
 import PosterItem from "./PosterItem"
 import Loading from "../Loading"
+import { isJwtExpired } from "../../lib/jwt"
 import ListItemBlank from "../ListItemBlank"
 
 const NOWSHOWING_MOVIES = gql`
@@ -31,13 +32,15 @@ const PosterBox = styled.div`
   justify-content: space-evenly;
 `
 
-const NowShowingMovies = () => (
+const NowShowingMovies = props => (
   <Query
     query={NOWSHOWING_MOVIES}
     variables={{ day: fecha.format(new Date(), "YYYY-MM-DD") }}
   >
-    {({ loading, data }) => {
+    {({ client, loading, error, data }) => {
       if (loading) return <Loading />
+      if (!isJwtExpired(error, client, props.basic, props.history))
+        return <Loading />
       if (!data || !data.nowshowing_movies)
         return <ListItemBlank message="No data yet" />
       return (

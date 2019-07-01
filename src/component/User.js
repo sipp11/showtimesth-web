@@ -7,7 +7,6 @@ import { Subscribe } from "unstated"
 import BasicContainer from "../unstated/basic"
 import { version, versionDate } from "../../package.json"
 import Loading from "./Loading"
-import ListItemBlank from "./ListItemBlank"
 
 const PROFILE = gql`
   query PROFILE($userId: Int) {

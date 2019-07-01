@@ -5,6 +5,7 @@ import gql from "graphql-tag"
 import { Subscribe } from "unstated"
 import BasicContainer from "../../unstated/basic"
 import { ListItem } from "../../lib/piece"
+import { isJwtExpired } from "../../lib/jwt"
 import Loading from "../Loading"
 import ListItemBlank from "../ListItemBlank"
 
@@ -43,8 +44,10 @@ export const TheaterListItem = props => (
 
 const FavTheater = props => (
   <Query query={FAV_THEATERS} variables={{ userId: props.basic.getUserId() }}>
-    {({ loading, data }) => {
+    {({ client, loading, error, data }) => {
       if (loading) return <Loading />
+      if (!isJwtExpired(error, client, props.basic, props.history))
+        return <Loading />
       if (!data || data.people_favtheater.length === 0)
         return <ListItemBlank message="ยังไม่มีโรงหนังที่ Fav ไว้" />
       return (

@@ -9,6 +9,7 @@ import GoogleAds from "../GoogleAds"
 import BasicContainer from "../../unstated/basic"
 import { imgSrc } from "../../lib/posterImage"
 import { getYear, getToday } from "../../lib/dt"
+import { isJwtExpired } from "../../lib/jwt"
 import { DimBox, BrightBox, Breadcrum, ifttt } from "../../lib/piece"
 import { TheaterOps } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
@@ -300,9 +301,11 @@ const TheaterOne = props => (
     }}
   >
     {({ addFav, unFav, theater: { result } }) => {
-      const { loading, data } = result
+      const { loading, data, client, error } = result
 
       if (loading) return <Loading />
+      if (!isJwtExpired(error, client, props.basic, props.history))
+        return <Loading />
       if (!data || !data.theater_theater) return <ListItemBlank />
       const theater = data.theater_theater[0]
       return (

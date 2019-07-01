@@ -6,6 +6,7 @@ import styled from "styled-components"
 import ReactGA from "react-ga"
 import PosterItem from "./PosterItem"
 import { getWeek } from "../../lib/dt"
+import { isJwtExpired } from "../../lib/jwt"
 import Loading from "../Loading"
 import ListItemBlank from "../ListItemBlank"
 
@@ -117,6 +118,7 @@ class ComingSoon extends React.Component {
   }
 
   render() {
+    const { props } = this
     const { bottomReached } = this.state
     return (
       <Query
@@ -126,8 +128,10 @@ class ComingSoon extends React.Component {
           offset: 0
         }}
       >
-        {({ loading, error, data, fetchMore }) => {
-          if (error) return <ListItemBlank message="error" />
+        {({ client, loading, error, data, fetchMore }) => {
+          if (loading) return <Loading />
+          if (!isJwtExpired(error, client, props.basic, props.history))
+            return <Loading />
           if (!data || !data.comingsoon_movies)
             return <ListItemBlank message="No data yet" />
 
