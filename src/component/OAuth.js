@@ -16,23 +16,29 @@ export default class OAuth extends Component {
     const { socket, provider, basic } = this.props
 
     socket.on(provider, user => {
+      // console.log('[socket] socket - on ', user)
       this.setState({ user })
       basic.savePassport(user)
+      // console.log('[socket] save to basic ')
       ReactGA.event({
         category: "Login",
         action: `Success with`,
         label: provider
       })
+      // console.log('[socket] send to reactga - popup.closed: ', this.popup)
       const { popup } = this
       if (popup && !popup.closed) {
         this.popup.close()
+        // console.log('[socket] after close', this.popup.closed, this.popup)
         this.popup = null
       }
+      // console.log('[socket] last', this.popup)
     })
   }
   componentWillUnmount() {
-    const { check } = this
+    const { check, popup } = this
     if (check) clearInterval(check)
+    if (popup) this.popup.close()
   }
 
   checkPopup() {
