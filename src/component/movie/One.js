@@ -379,10 +379,17 @@ const MovieOne = props => (
   >
     {({ addFav, starToggler, watchToggler, movie: { result } }) => {
       const { loading, data } = result
-
       if (loading) return <Loading />
       if (!data || !data.movie_movie) return <ListItemBlank />
       const mov = data.movie_movie[0]
+      if (!mov) {
+        // NOTE: it's likely that this movie has been merged to another
+        //       redirect to front page then
+        setTimeout(() => {
+          props.history.push("/")
+        }, 500)
+        return <Loading />
+      }
       return (
         <Detail
           tab={props.tab}
