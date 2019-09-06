@@ -7,6 +7,7 @@ import { NEARBY_THEATERS_AND_A_MOVIE } from "../theater/Ops"
 import { ScreenAndTime } from "../theater/One"
 import { getToday } from "../../lib/dt"
 import { DimBox } from "../../lib/piece"
+import { ReservationLink } from "../theater/Ops"
 
 class NearbyTab extends React.Component {
   watchID = null
@@ -75,6 +76,12 @@ class NearbyTab extends React.Component {
               {nearby_theaters.map(theater => {
                 return (
                   <DimBox fontSize="0.85rem" key={`fav-${theater.id}`}>
+                    <span className="is-pulled-right">
+                      <ReservationLink
+                        chain={theater.chain}
+                        code={theater.code}
+                      />
+                    </span>
                     <Link to={`/t/${theater.id}`} className="title">
                       {theater.english}
                     </Link>

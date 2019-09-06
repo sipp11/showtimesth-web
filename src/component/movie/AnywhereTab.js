@@ -8,6 +8,7 @@ import { THEATERS_WITH_A_MOVIE } from "../theater/Ops"
 import { ScreenAndTime } from "../theater/One"
 import { getToday } from "../../lib/dt"
 import { DimBox } from "../../lib/piece"
+import { ReservationLink } from "../theater/Ops"
 
 class AnywhereTab extends Component {
   today = getToday()
@@ -97,6 +98,12 @@ class AnywhereTab extends Component {
                 {theater_theater.map((theater, ind) => {
                   return (
                     <DimBox fontSize="0.85rem" key={`anyw-${ind}`}>
+                      <span className="is-pulled-right">
+                        <ReservationLink
+                          chain={theater.chain}
+                          code={theater.code}
+                        />
+                      </span>
                       <Link to={`/t/${theater.id}`} className="title">
                         {theater.english}
                       </Link>

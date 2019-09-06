@@ -3,6 +3,8 @@ import { Query, Mutation } from "react-apollo"
 import gql from "graphql-tag"
 import { adopt } from "react-adopt"
 import { FAV_THEATERS } from "./Fav"
+import ReactGA from "react-ga"
+import styled from "styled-components"
 
 export const FAV_THEATER_AND_A_MOVIE = gql`
   query FAV_THEATER_AND_A_MOVIE($userId: Int!, $movieId: Int!, $day: date) {
@@ -13,9 +15,13 @@ export const FAV_THEATER_AND_A_MOVIE = gql`
       theater {
         id
         slug
+        code
         thai
         english
         point
+        chain {
+          code
+        }
         showtimes(
           where: { date: { _eq: $day }, movie_id: { _eq: $movieId } }
           order_by: { audio: asc, screen: asc }
@@ -56,8 +62,12 @@ export const THEATERS_WITH_A_MOVIE = gql`
     ) {
       id
       slug
+      code
       english
       thai
+      chain {
+        code
+      }
       showtimes(
         where: { _and: { date: { _eq: $day }, movie_id: { _eq: $movieId } } }
         order_by: { audio: asc, screen: asc }
@@ -100,9 +110,13 @@ export const NEARBY_THEATERS_AND_A_MOVIE = gql`
     ) {
       id
       slug
+      code
       english
       thai
       point
+      chain {
+        code
+      }
       showtimes(
         where: { date: { _eq: $day }, movie_id: { _eq: $movieId } }
         order_by: { audio: asc, screen: asc }
@@ -128,6 +142,7 @@ const THEATER_QUERY = gql`
     theater_theater(where: { id: { _eq: $theaterId } }) {
       id
       slug
+      code
       english
       thai
       tel
@@ -237,6 +252,45 @@ const unFav = ({ variables, render }) => (
     {(mutation, result) => render({ mutation, result })}
   </Mutation>
 )
+
+const StyledOutboundLink = styled(ReactGA.OutboundLink)`
+  margin: 0 0.3rem;
+  font-weight: 600;
+  font-size: 0.6rem;
+  padding-bottom: 0;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  padding-top: 0;
+  border-radius: 1px;
+  background-color: #ffffffaa !important;
+
+  :hover {
+    background: #fff !important;
+  }
+`
+
+export const ReservationLink = props => {
+  const { chain, code } = props
+  const reservableChains = ["sf", "major"]
+  if (reservableChains.indexOf(chain.code) === -1) {
+    return <></>
+  }
+  let urlTmpl = {
+    major: `https://www.majorcineplex.com/booking2/search_showtime/cinema=`,
+    sf: `https://www.sfcinemacity.com/showtime/cinema/`
+  }
+  const url = `${urlTmpl[chain.code]}${code}`
+  return (
+    <StyledOutboundLink
+      eventLabel="reserve"
+      to={url}
+      target="_blank"
+      className="button is-white"
+    >
+      RESERVE
+    </StyledOutboundLink>
+  )
+}
 
 export const TheaterOps = adopt({
   addFav,

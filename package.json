@@ -1,6 +1,6 @@
 {
   "name": "stth-web",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "versionDate": "2019-09-07",
   "private": true,
   "dependencies": {

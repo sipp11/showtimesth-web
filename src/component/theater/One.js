@@ -11,7 +11,7 @@ import { imgSrc } from "../../lib/posterImage"
 import { getYear, getToday } from "../../lib/dt"
 import { isJwtExpired } from "../../lib/jwt"
 import { DimBox, BrightBox, Breadcrum, ifttt } from "../../lib/piece"
-import { TheaterOps } from "./Ops"
+import { TheaterOps, ReservationLink } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
 
 const FigImage = styled.figure`
@@ -174,6 +174,7 @@ class Detail extends React.Component {
     const {
       id,
       chain,
+      code,
       english,
       thai,
       tel,
@@ -224,6 +225,9 @@ class Detail extends React.Component {
             )}
           </Desc>
 
+          <span className="is-pulled-right">
+            <ReservationLink chain={chain} code={code} />
+          </span>
           <Button
             className={`button is-small ${
               userFav.length > 0 ? "is-danger" : ""

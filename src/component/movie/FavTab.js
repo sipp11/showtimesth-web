@@ -7,6 +7,7 @@ import { FAV_THEATER_AND_A_MOVIE } from "../theater/Ops"
 import { ScreenAndTime } from "../theater/One"
 import { getToday } from "../../lib/dt"
 import { DimBox } from "../../lib/piece"
+import { ReservationLink } from "../theater/Ops"
 
 const FavTab = props => {
   const variables = {
@@ -28,6 +29,12 @@ const FavTab = props => {
             {people_favtheater.map(({ theater }) => {
               return (
                 <DimBox fontSize="0.85rem" key={`fav-${theater.id}`}>
+                  <span className="is-pulled-right">
+                    <ReservationLink
+                      chain={theater.chain}
+                      code={theater.code}
+                    />
+                  </span>
                   <Link to={`/t/${theater.id}`} className="title">
                     {theater.english}
                   </Link>
