@@ -46,7 +46,7 @@ const VideoContainer = styled.span`
 `
 
 const DetailTab = props => {
-  const { release_date, videos, aggregate, selDetail } = props
+  const { release_date, duration, videos, aggregate, selDetail } = props
   return (
     <DetailDimBox>
       <Desc>
@@ -76,6 +76,11 @@ const DetailTab = props => {
           <em>Release date</em>
           <br />
           &nbsp;&nbsp;&nbsp;{release_date}
+        </div>
+        <div>
+          <em>Duration</em>
+          <br />
+          &nbsp;&nbsp;&nbsp;{duration || "-"} min
         </div>
         {selDetail.language !== undefined && (
           <>

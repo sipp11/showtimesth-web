@@ -15,8 +15,8 @@ export const getUserId = token => {
 export const isJwtExpired = (error, client, basic, history) => {
   if (error && error.name === "Error" && error.message.indexOf("JWTExpired")) {
     setTimeout(() => {
-      basic.logout(client)
-      history.push("/login")
+      basic && basic.logout(client)
+      history && history.push("/login")
     }, 500)
     return false
   }

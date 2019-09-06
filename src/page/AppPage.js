@@ -24,27 +24,29 @@ const HeaderLink = styled(props => <Link {...props} />)`
 `
 
 class AppPage extends Component {
-  renderComingSoon() {
+  renderComingSoon(props) {
     ReactGA.pageview("/comingsoon")
+    const { basic, history } = props
     return (
       <>
         <h1>
           <FontAwesome name="film" /> Coming soon
           <HeaderLink to="/">Now showing</HeaderLink>
         </h1>
-        <ComingSoon />
+        <ComingSoon basic={basic} history={history} />
       </>
     )
   }
-  renderNowShowing() {
+  renderNowShowing(props) {
     ReactGA.pageview("/nowshowing")
+    const { basic, history } = props
     return (
       <>
         <h1>
           <FontAwesome name="film" /> Now showing
           <HeaderLink to="/comingsoon">Coming soon</HeaderLink>
         </h1>
-        <NowShowing />
+        <NowShowing basic={basic} history={history} />
       </>
     )
   }
@@ -61,9 +63,9 @@ class AppPage extends Component {
 
   render() {
     const { page, subpage } = this.props.match.params
-    let child = this.renderNowShowing()
+    let child = this.renderNowShowing(this.props)
     if (page === "comingsoon") {
-      child = this.renderComingSoon()
+      child = this.renderComingSoon(this.props)
     } else if (page === "list") {
       child = this.renderTheaterList(this, subpage)
     }

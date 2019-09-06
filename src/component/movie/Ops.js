@@ -147,8 +147,16 @@ const MOVIE_WATCH_UPDATE = gql`
   }
 `
 
-const watchToggler = ({ render }) => (
-  <Mutation mutation={MOVIE_WATCH_UPDATE}>
+const watchToggler = ({ variables, render }) => (
+  <Mutation
+    mutation={MOVIE_WATCH_UPDATE}
+    refetchQueries={[
+      {
+        query: MOVIE_QUERY,
+        variables
+      }
+    ]}
+  >
     {(mutation, result) => render({ mutation, result })}
   </Mutation>
 )

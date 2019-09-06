@@ -353,6 +353,7 @@ class Detail extends React.Component {
               videos={videos}
               aggregate={aggregate}
               selDetail={selDetail}
+              duration={movie.duration}
               release_date={movie.release_date}
             />
           )}
