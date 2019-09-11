@@ -70,6 +70,8 @@ const App = () => (
     <Route path="/m/:id/:tab" component={MoviePage} />
     <Route path="/m/:id" component={MoviePage} />
     <Route path="/search" component={SearchPage} />
+    <Route path="/fav/:what/:tab" component={FavPage} />
+    <Route path="/fav/:what" component={FavPage} />
     <Route path="/fav" component={FavPage} />
     <Route path="/me" component={UserPage} />
     <Route path="/:page/:subpage" component={AppPage} />

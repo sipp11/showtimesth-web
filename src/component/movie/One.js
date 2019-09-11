@@ -2,11 +2,10 @@ import React from "react"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
 import FontAwesome from "react-fontawesome"
-import { Link } from "react-router-dom"
 import ReactGA from "react-ga"
 import BasicContainer from "../../unstated/basic"
 import Loading from "../Loading"
-import { BrightBox, DimBox, ifttt } from "../../lib/piece"
+import { BrightBox, DimBox, FlexDimBox, Tab, ifttt } from "../../lib/piece"
 import { getYear, getNow } from "../../lib/dt"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
@@ -34,35 +33,6 @@ const FlexBrightBox = styled(props => <BrightBox {...props} />)`
     a {
       position: absolute;
       bottom: -55px;
-    }
-  }
-`
-
-const FlexDimBox = styled(props => <DimBox {...props} />)`
-  display: flex;
-  align-items: flex-start;
-  font-size: ${props => (props.fontSize ? props.fontSize : "1rem")};
-  h1 {
-    padding: 0 0.5rem;
-    font-size: 1.8rem;
-    flex: 1;
-  }
-
-  span.video {
-    display: inline-block;
-
-    a > span.fa {
-      vertical-align: middle;
-      font-size: 40px;
-    }
-    a > span {
-      padding-left: 5px;
-    }
-  }
-  @media screen and (max-width: 450px) {
-    h1 {
-      padding: 0;
-      font-size: 1.1rem;
     }
   }
 `
@@ -112,32 +82,6 @@ const Tags = styled.span`
   }
 `
 
-const Tab = styled(props => <Link {...props} />)`
-  flex: 1;
-  font-weight: 500;
-  text-align: center;
-  border: 1px solid #cbd3dd;
-  padding: 0.25rem 0;
-  color: ${props => (props.active === 1 ? "#363636;" : "#cbd3dd")};
-  background: ${props => (props.active === 1 ? "#fff" : "transparent")};
-
-  :first-child {
-    border-left: 0;
-    border-right: 0;
-  }
-  :last-child {
-    border-left: 0;
-    border-right: 0;
-  }
-
-  @media screen and (min-width: 450px) {
-    :hover {
-      background: #153456;
-      color: #cbd3dd;
-    }
-  }
-`
-
 class Detail extends React.Component {
   state = {
     favLoading: false
@@ -165,7 +109,12 @@ class Detail extends React.Component {
   }
 
   render() {
-    const { userId, movie, tab: activeTab } = this.props
+    const {
+      userId,
+      movie,
+      mutation: { upsertVote, rmVote },
+      tab: activeTab
+    } = this.props
     const {
       id,
       slug,
@@ -355,6 +304,10 @@ class Detail extends React.Component {
               selDetail={selDetail}
               duration={movie.duration}
               release_date={movie.release_date}
+              upsertVote={upsertVote}
+              rmVote={rmVote}
+              votes={movie.votes}
+              movieId={id}
             />
           )}
 
@@ -378,7 +331,14 @@ const MovieOne = props => (
       userId: props.basic.getUserId() || -1
     }}
   >
-    {({ addFav, starToggler, watchToggler, movie: { result } }) => {
+    {({
+      addFav,
+      starToggler,
+      watchToggler,
+      upsertVote,
+      rmVote,
+      movie: { result }
+    }) => {
       const { loading, data } = result
       if (loading) return <Loading />
       if (!data || !data.movie_movie) return <ListItemBlank />
@@ -396,7 +356,7 @@ const MovieOne = props => (
           tab={props.tab}
           movie={mov}
           userId={props.basic.getUserId()}
-          mutation={{ addFav, starToggler, watchToggler }}
+          mutation={{ addFav, starToggler, watchToggler, upsertVote, rmVote }}
         />
       )
     }}

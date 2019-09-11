@@ -3,6 +3,7 @@ import ReactGA from "react-ga"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import ReactMarkdown from "react-markdown"
+import Rating from "../Rating"
 import { DetailDimBox } from "./One"
 
 const Desc = styled.div`
@@ -46,7 +47,17 @@ const VideoContainer = styled.span`
 `
 
 const DetailTab = props => {
-  const { release_date, duration, videos, aggregate, selDetail } = props
+  const {
+    movieId,
+    release_date,
+    duration,
+    videos,
+    upsertVote,
+    rmVote,
+    aggregate: { avg, count },
+    votes,
+    selDetail
+  } = props
   return (
     <DetailDimBox>
       <Desc>
@@ -66,12 +77,17 @@ const DetailTab = props => {
             </div>
           ))}
         </VideoContainer>
-        {aggregate.count > 0 && (
-          <div>
-            <FontAwesome name="star" /> {aggregate.avg.points.toFixed(1) || "0"}{" "}
-            <small className="muted">({aggregate.count} votes)</small>
-          </div>
-        )}
+        <Rating
+          movieId={movieId}
+          upsertVote={upsertVote}
+          rmVote={rmVote}
+          count={count}
+          initial={(avg.points / 2).toFixed(1)}
+          userVote={votes.length > 0 ? (votes[0].points / 2).toFixed(1) : null}
+        />
+        {/* {aggregate.count > 0 && (
+          <Rating />
+        )} */}
         <div>
           <em>Release date</em>
           <br />

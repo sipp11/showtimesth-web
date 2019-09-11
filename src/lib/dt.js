@@ -21,3 +21,7 @@ export const getNow = () => {
 export const getToday = () => {
   return fecha.format(new Date(), "YYYY-MM-DD")
 }
+
+export const dateFmt = day => {
+  return fecha.format(new Date(day), "mediumDate")
+}

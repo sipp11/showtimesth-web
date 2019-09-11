@@ -1,27 +1,12 @@
 import React, { Component } from "react"
-import { Link } from "react-router-dom"
 import FontAwesome from "react-fontawesome"
-import styled from "styled-components"
 import ReactGA from "react-ga"
 import NowShowing from "../component/movie/Nowshowing"
 import Navbar from "../component/Navbar"
-import { PageContainer } from "../lib/piece"
+import { HeaderLink, PageContainer } from "../lib/piece"
 import ComingSoon from "../component/movie/Comingsoon"
 import Chain from "../component/theater/Chain"
 import List from "../component/theater/List"
-
-const HeaderLink = styled(props => <Link {...props} />)`
-  margin-left: 1.2rem;
-  font-size: 0.95rem;
-
-  color: #808a96;
-
-  @media screen and (min-width: 450px) {
-    :hover {
-      color: #e3e3e3;
-    }
-  }
-`
 
 class AppPage extends Component {
   renderComingSoon(props) {

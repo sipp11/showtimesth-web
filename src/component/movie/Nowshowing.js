@@ -2,8 +2,7 @@ import React from "react"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import fecha from "fecha"
-import styled from "styled-components"
-import PosterItem from "./PosterItem"
+import PosterItem, { CenterPosterBox as PosterBox } from "./PosterItem"
 import Loading from "../Loading"
 import { isJwtExpired } from "../../lib/jwt"
 import ListItemBlank from "../ListItemBlank"
@@ -24,12 +23,6 @@ const NOWSHOWING_MOVIES = gql`
       }
     }
   }
-`
-
-const PosterBox = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-evenly;
 `
 
 const NowShowingMovies = props => (

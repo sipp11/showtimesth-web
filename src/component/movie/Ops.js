@@ -41,6 +41,7 @@ const MOVIE_QUERY = gql`
       }
       votes(where: { user_id: { _eq: $userId } }) {
         id
+        points
       }
       favs {
         id
@@ -161,10 +162,117 @@ const watchToggler = ({ variables, render }) => (
   </Mutation>
 )
 
+const MOVIE_ADD_VOTE = gql`
+  mutation MOVIE_ADD_VOTE($movieId: Int!, $date: date, $points: smallint!) {
+    insert_people_movievote(
+      objects: {
+        movie_id: $movieId
+        points: $points
+        date: $date
+        session_id: ""
+        ip: "0.0.0.0"
+      }
+      on_conflict: {
+        constraint: people_movievote_user_id_movie_id_key
+        update_columns: [points, date]
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const upsertVote = ({ variables, render }) => (
+  <Mutation
+    mutation={MOVIE_ADD_VOTE}
+    refetchQueries={[
+      {
+        query: MOVIE_QUERY,
+        variables
+      }
+    ]}
+  >
+    {(mutation, result) => render({ mutation, result })}
+  </Mutation>
+)
+
+const MOVIE_RM_VOTE = gql`
+  mutation MOVIE_RM_VOTE($movieId: Int!) {
+    delete_people_movievote(where: { movie_id: { _eq: $movieId } }) {
+      affected_rows
+    }
+  }
+`
+
+const rmVote = ({ variables, render }) => (
+  <Mutation
+    mutation={MOVIE_RM_VOTE}
+    refetchQueries={[
+      {
+        query: MOVIE_QUERY,
+        variables
+      }
+    ]}
+  >
+    {(mutation, result) => render({ mutation, result })}
+  </Mutation>
+)
+
+export const TOP_FAV_MOVIES = gql`
+  query TOP_FAV_MOVIES($userId: Int!) {
+    people_movievote(
+      where: { user_id: { _eq: $userId }, points: { _gte: 9 } }
+      order_by: { points: desc, movie: { release_date: asc } }
+    ) {
+      movie {
+        id
+        slug
+        title
+        release_date
+        images(limit: 2, order_by: { order: desc }) {
+          location
+          source
+          type
+          url
+        }
+      }
+      points
+    }
+  }
+`
+
+export const WATCHED_MOVIES = gql`
+  query WATCHED_MOVIES($userId: Int!) {
+    people_favmovie(
+      where: { user_id: { _eq: $userId } }
+      order_by: { watched_since: asc_nulls_last }
+    ) {
+      movie {
+        id
+        slug
+        title
+        release_date
+        images(limit: 2, order_by: { order: desc }) {
+          location
+          source
+          type
+          url
+        }
+      }
+      watched
+      watched_since
+      star
+      starred_since
+    }
+  }
+`
+
 export const MovieOps = adopt({
   addFav,
   starToggler,
   watchToggler,
+  upsertVote,
+  rmVote,
   movie: ({ variables, render }) => (
     <Query query={MOVIE_QUERY} variables={variables}>
       {result => render({ result })}

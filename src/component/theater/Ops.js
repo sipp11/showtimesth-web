@@ -276,7 +276,7 @@ export const ReservationLink = props => {
     return <></>
   }
   let urlTmpl = {
-    major: `https://www.majorcineplex.com/booking2/search_showtime/cinema=`,
+    major: `https://www.majorcineplex.com/booking/search-results.php?cinemaId_1=`,
     sf: `https://www.sfcinemacity.com/showtime/cinema/`
   }
   const url = `${urlTmpl[chain.code]}${code}`

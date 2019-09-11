@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import fecha from "fecha"
 import styled from "styled-components"
 import ReactGA from "react-ga"
-import PosterItem from "./PosterItem"
+import PosterItem, { LeftyPosterBox as PosterBox } from "./PosterItem"
 import { getWeek } from "../../lib/dt"
 import { isJwtExpired } from "../../lib/jwt"
 import Loading from "../Loading"
@@ -38,13 +38,6 @@ const WeeklyBox = styled.div`
     border-bottom: 1px solid #48525e;
     margin-bottom: 1rem;
   }
-`
-
-const PosterBox = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  margin-bottom: 2rem;
 `
 
 const weekWord = wk => {
