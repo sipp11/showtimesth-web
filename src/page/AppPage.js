@@ -1,6 +1,8 @@
 import React, { Component } from "react"
 import FontAwesome from "react-fontawesome"
 import ReactGA from "react-ga"
+import { Subscribe } from "unstated"
+import BasicContainer from "../unstated/basic"
 import NowShowing from "../component/movie/Nowshowing"
 import Navbar from "../component/Navbar"
 import { HeaderLink, PageContainer } from "../lib/piece"
@@ -63,4 +65,10 @@ class AppPage extends Component {
   }
 }
 
-export default AppPage
+export default props => {
+  return (
+    <Subscribe to={[BasicContainer]}>
+      {basic => <AppPage {...props} basic={basic} />}
+    </Subscribe>
+  )
+}

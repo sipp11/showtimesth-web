@@ -6,6 +6,7 @@ import gql from "graphql-tag"
 import { Subscribe } from "unstated"
 import BasicContainer from "../unstated/basic"
 import { version, versionDate } from "../../package.json"
+import { isJwtExpired } from "../lib/jwt"
 import Loading from "./Loading"
 
 const PROFILE = gql`
@@ -43,15 +44,9 @@ const UserProfile = props => (
   <Query query={PROFILE} variables={{ userId: props.basic.getUserId() }}>
     {({ client, loading, error, data }) => {
       if (loading) return <Loading />
-      if (error || !data || !data.auth_user || data.auth_user.length === 0) {
-        // most of the time auth_user is empty, then we should logout.
-        setTimeout(() => {
-          props.basic.logout(client)
-          props.history.push("/login")
-        }, 500)
+      if (!isJwtExpired(error, client, props.basic, props.history))
         return <Loading />
-      }
-      // return <ListItemBlank message={"No data yet"} />
+
       const user = data.auth_user[0]
       const { basic, history } = props
       return (
