@@ -44,6 +44,7 @@ class FavPage extends Component {
 
   render() {
     const {
+      location,
       history,
       match: { params }
     } = this.props
@@ -53,7 +54,7 @@ class FavPage extends Component {
 
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={location} />
         {isDefault && this.renderFavTheater()}
         {!isDefault && this.renderFavMovie(params, history)}
       </PageContainer>

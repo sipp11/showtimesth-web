@@ -41,7 +41,7 @@ class LoginPage extends Component {
 
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={this.props.location} />
         <h1>Login</h1>
 
         <Box className="login-page">

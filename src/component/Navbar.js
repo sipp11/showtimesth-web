@@ -46,6 +46,12 @@ const BoxItem = styled.div`
   }
 `
 
+const roundRobinUrls = (currentUrl, choices) => {
+  const ind = choices.indexOf(currentUrl)
+  if (ind == -1 || ind == choices.length - 1) return choices[0]
+  return choices[ind + 1]
+}
+
 const Navbar = props => (
   <Nav
     className="navbar is-primary is-fixed-bottom"
@@ -54,7 +60,10 @@ const Navbar = props => (
   >
     <Box>
       <BoxItem>
-        <Link to="/" className="navbar-item">
+        <Link
+          to={roundRobinUrls(props.location.pathname, ["/", "/comingsoon"])}
+          className="navbar-item"
+        >
           &nbsp;
           <FontAwesome name={"home"} />
           &nbsp;
@@ -79,7 +88,13 @@ const Navbar = props => (
       {props.basic.state.token && (
         <>
           <BoxItem>
-            <Link to="/fav" className="navbar-item">
+            <Link
+              to={roundRobinUrls(props.location.pathname, [
+                "/fav",
+                "/fav/movie"
+              ])}
+              className="navbar-item"
+            >
               <FontAwesome name={"heart"} />
               &nbsp;Fav
             </Link>

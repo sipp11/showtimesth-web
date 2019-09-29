@@ -6,13 +6,14 @@ import { PageContainer } from "../lib/piece"
 class MoviePage extends Component {
   render() {
     const {
+      location,
       history,
       match: { params }
     } = this.props
     const { id } = params
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={location} />
         {!id && <span>Should be a list and search, huh?</span>}
         {id && <One {...params} history={history} />}
       </PageContainer>

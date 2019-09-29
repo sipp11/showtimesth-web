@@ -7,7 +7,7 @@ class UserPage extends Component {
   render() {
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={this.props.location} />
         <UserProfile {...this.props} />
       </PageContainer>
     )

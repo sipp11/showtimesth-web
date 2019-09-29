@@ -58,7 +58,7 @@ class AppPage extends Component {
     }
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={this.props.location} />
         {child}
       </PageContainer>
     )

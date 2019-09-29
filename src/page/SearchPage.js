@@ -99,7 +99,7 @@ class SearchPage extends Component {
     const nearbySkip = query.length === 0 || query !== "#nearby"
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={this.props.location} />
         <div className={`control has-icons-left is-large ${isLoadingCls}`}>
           <Input
             ref={input => {

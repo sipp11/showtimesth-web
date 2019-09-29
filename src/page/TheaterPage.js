@@ -8,7 +8,7 @@ class TheaterPage extends Component {
     const { id } = this.props.match.params
     return (
       <PageContainer>
-        <Navbar />
+        <Navbar location={this.props.location} />
         {id && <One id={id} />}
       </PageContainer>
     )
