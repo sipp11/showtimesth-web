@@ -53,6 +53,9 @@ const DetailTab = props => {
     duration,
     videos,
     upsertVote,
+    addFav,
+    starToggler,
+    userFav,
     rmVote,
     aggregate: { avg, count },
     votes,
@@ -80,6 +83,9 @@ const DetailTab = props => {
         <Rating
           movieId={movieId}
           upsertVote={upsertVote}
+          starToggler={starToggler}
+          addFav={addFav}
+          userFav={userFav}
           rmVote={rmVote}
           count={count}
           initial={(avg.points / 2).toFixed(1)}

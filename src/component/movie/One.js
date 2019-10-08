@@ -112,7 +112,7 @@ class Detail extends React.Component {
     const {
       userId,
       movie,
-      mutation: { upsertVote, rmVote },
+      mutation: { upsertVote, rmVote, starToggler, addFav },
       tab: activeTab
     } = this.props
     const {
@@ -133,10 +133,9 @@ class Detail extends React.Component {
     const likeCount = favs.filter(f => f.star).length
     const watchCount = favs.filter(f => f.watched).length
     const userFav = favs.filter(f => f.user_id === userId)
-    const userLike =
-      userFav.length > 0 && userFav.filter(f => f.star).length > 0
-    const hasWatched =
-      userFav.length > 0 && userFav.filter(f => f.watched).length > 0
+    const uf = userFav
+    const hasWatched = uf.length > 0 && uf.filter(f => f.watched).length > 0
+    const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
     return (
       <>
         <FlexBrightBox marginBottom={0}>
@@ -166,50 +165,15 @@ class Detail extends React.Component {
         <DetailDimBox marginBottom={0}>
           <ButtonContainer>
             <button
-              className={`button is-small ${userLike ? "is-danger" : ""} ${
+              className={`button is-small ${isStarred ? "is-danger" : ""} ${
                 this.state.favLoading ? "is-loading" : ""
               }`}
-              disabled={userId === -1 || this.state.favLoading}
-              onClick={async () => {
-                this.toggleFavLoading()
-                const { addFav, starToggler } = this.props.mutation
-                let vars
-                if (userFav.length === 0) {
-                  vars = {
-                    movieId: id,
-                    star: true,
-                    starredSince: getNow(),
-                    watched: false,
-                    watchedSince: null
-                  }
-                  await addFav.mutation({
-                    variables: vars
-                  })
-                  ReactGA.event({
-                    category: "Movie",
-                    action: `Add star`,
-                    value: id
-                  })
-                  this.toggleFavLoading()
-                  return
-                }
-                await starToggler.mutation({
-                  variables: {
-                    id: userFav[0].id,
-                    star: !userLike,
-                    starredSince: userLike ? null : getNow()
-                  }
-                })
-
-                ReactGA.event({
-                  category: "Movie",
-                  action: `${userLike ? "Remove" : "Add"} star`,
-                  value: id
-                })
-                this.toggleFavLoading()
-              }}
+              disabled={true}
+              /* NOTE: FAV works differently since v1.5 - it will be fav'ed
+                       when rating is 2.5 stars or more
+              */
             >
-              {ifttt(userLike, "Liked", "Like")}{" "}
+              {ifttt(isStarred, "Liked", "Like")}{" "}
               {likeCount > 0 ? `${likeCount}` : ""}
             </button>
             <button
@@ -219,7 +183,7 @@ class Detail extends React.Component {
               disabled={userId === -1 || this.state.favLoading}
               onClick={async () => {
                 this.toggleFavLoading()
-                const { addFav, watchToggler } = this.props.mutation
+                const { watchToggler } = this.props.mutation
                 let vars
                 if (userFav.length === 0) {
                   vars = {
@@ -305,6 +269,9 @@ class Detail extends React.Component {
               duration={movie.duration}
               release_date={movie.release_date}
               upsertVote={upsertVote}
+              userFav={userFav}
+              addFav={addFav}
+              starToggler={starToggler}
               rmVote={rmVote}
               votes={movie.votes}
               movieId={id}

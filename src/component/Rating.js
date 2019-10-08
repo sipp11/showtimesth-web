@@ -58,14 +58,27 @@ class RRating extends React.Component {
     rmVote: PropTypes.func,
     count: PropTypes.number.isRequired,
     initial: PropTypes.number,
-    userVote: PropTypes.number
+    userVote: PropTypes.number,
+    starToggler: PropTypes.func,
+    userFav: PropTypes.array
   }
 
   render() {
-    const { count, movieId, initial, upsertVote, rmVote, userVote } = this.props
+    const {
+      count,
+      movieId,
+      initial,
+      upsertVote,
+      userFav: uf,
+      addFav,
+      starToggler,
+      rmVote,
+      userVote
+    } = this.props
     // if user voted, then show user's rating -- not average
     const initailRating = userVote || initial || 0
     const hasVoted = userVote !== null
+    const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
 
     return (
       <Holder className={hasVoted ? "voted" : ""}>
@@ -78,18 +91,60 @@ class RRating extends React.Component {
           end={5}
           initialRating={initailRating}
           onClick={async val => {
+            const points = (val * 2).toFixed(0)
+            const isLiked = points >= 5
+
+            /* ------- Star ----------- */
+            // [0] assume user like the movie if point >= 5
+            if (uf.length === 0) {
+              const vars = {
+                movieId: movieId,
+                star: true,
+                starredSince: getNow(),
+                watched: false,
+                watchedSince: null
+              }
+              await addFav.mutation({
+                variables: vars
+              })
+              ReactGA.event({
+                category: "Movie",
+                action: `Add star`,
+                value: movieId
+              })
+            } else {
+              await starToggler.mutation({
+                variables: {
+                  id: uf[0].id,
+                  star: isLiked,
+                  starredSince: isStarred ? null : getNow()
+                }
+              })
+
+              // [1] assume user like the movie if point >= 5
+              ReactGA.event({
+                category: "Movie",
+                action: `${isStarred ? "Remove" : "Add"} star`,
+                value: movieId
+              })
+            }
+
+            /* ------- RATING ----------- */
+
+            // [1] dealing with rating
             await upsertVote.mutation({
               variables: {
                 movieId: movieId,
-                points: (val * 2).toFixed(0),
+                points: points,
                 date: getNow()
               }
             })
 
+            // [2] dealing with rating
             ReactGA.event({
               category: "Movie",
               action: `rating`,
-              value: (val * 2).toFixed(0)
+              value: points
             })
           }}
         />
@@ -101,6 +156,25 @@ class RRating extends React.Component {
         )}
         <Button
           onClick={async () => {
+            /* ------- Star ----------- */
+            if (uf) {
+              await starToggler.mutation({
+                variables: {
+                  id: uf[0].id,
+                  star: false,
+                  starredSince: null
+                }
+              })
+
+              // [1] assume user like the movie if point >= 5
+              ReactGA.event({
+                category: "Movie",
+                action: `Remove star`,
+                value: movieId
+              })
+            }
+
+            /* ------- REMOVE RATING ----------- */
             await rmVote.mutation({
               variables: {
                 movieId: movieId
