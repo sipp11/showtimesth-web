@@ -4,6 +4,7 @@ import Loading from "../Loading"
 import GoogleAds from "../GoogleAds"
 import ListItemBlank from "../ListItemBlank"
 import { TheaterListItem } from "../theater/Fav"
+import MovieListItem from "../movie/Item"
 
 export const TheaterResult = props => (
   <>
@@ -17,6 +18,23 @@ export const TheaterResult = props => (
           />
         )}
         <TheaterListItem theater={ele} />
+      </Fragment>
+    ))}
+  </>
+)
+
+export const MovieResult = props => (
+  <>
+    {props.movies.map((ele, ind) => (
+      <Fragment key={`tr-frgmt-${ind}`}>
+        {ind % 10 === 4 && (
+          <GoogleAds
+            format="fluid"
+            layoutKey="-hb-7+2h-1m-4u"
+            slot="6589741428"
+          />
+        )}
+        <MovieListItem movie={ele} />
       </Fragment>
     ))}
   </>
@@ -44,8 +62,17 @@ const SearchResult = props => {
       {({ theaterSearch, nearbyTheaters }) => {
         let { loading, data } = theaterSearch.result
         if (loading) return <Loading />
-        if (data && data.theater_search && data.theater_search.length > 0) {
-          return <TheaterResult theaters={data.theater_search} />
+        if (
+          data &&
+          ((data.movie_search && data.movie_search.length > 0) ||
+            (data.theater_search && data.theater_search.length > 0))
+        ) {
+          return (
+            <>
+              <TheaterResult theaters={data.theater_search} />
+              <MovieResult movies={data.movie_search} />
+            </>
+          )
         }
         const nearbyData = nearbyTheaters.result.data
 

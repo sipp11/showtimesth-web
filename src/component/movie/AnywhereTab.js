@@ -19,7 +19,8 @@ class AnywhereTab extends Component {
   }
 
   isBottom(el) {
-    return el.getBoundingClientRect().bottom <= window.innerHeight
+    if (el) return el.getBoundingClientRect().bottom <= window.innerHeight
+    return true
   }
 
   componentDidMount() {
@@ -86,7 +87,12 @@ class AnywhereTab extends Component {
         <Query query={THEATERS_WITH_A_MOVIE} variables={variables}>
           {({ data, loading, fetchMore }) => {
             if (loading) return <Loading />
-            if (!data || !data.theater_theater) return <ListItemBlank />
+            if (
+              !data ||
+              !data.theater_theater ||
+              data.theater_theater.length === 0
+            )
+              return <ListItemBlank />
             const { theater_theater } = data
 
             if (bottomReached) {

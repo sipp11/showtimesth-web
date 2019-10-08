@@ -73,12 +73,14 @@ const ButtonContainer = styled.span`
   }
 `
 
-const Tags = styled.span`
+export const Tags = styled.span`
+  margin-bottom: ${props => `${props.marginBottom} !important` || "1rem"};
   span.tag {
     font-size: 0.7rem;
     background: transparent;
     color: #cbd3dd;
     border: 1px solid #cbd3dd;
+    margin-bottom: ${props => `${props.marginBottom} !important` || "0.5rem"};
   }
 `
 
@@ -98,7 +100,7 @@ class Detail extends React.Component {
     ReactGA.pageview(`/m/${id}-${slug}`)
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.props.tab !== newProps.tab) {
       ReactGA.event({
         category: "Movie",

@@ -20,14 +20,14 @@ class LoginPage extends Component {
   componentDidMount() {
     ReactGA.pageview("/login")
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { basic, history } = this.props
     if (basic.state.token !== null) {
       history.push("/")
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { history } = this.props
     const { basic } = nextProps
     if (basic.state.token !== null) {

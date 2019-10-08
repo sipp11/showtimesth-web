@@ -86,6 +86,7 @@ const WatchedMovies = props => (
           }
           items[y].push(i)
         }
+        return null
       })
 
       return (

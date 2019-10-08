@@ -54,12 +54,12 @@ const CountSpan = styled.span`
 class RRating extends React.Component {
   static propTypes = {
     movieId: PropTypes.number,
-    upsertVote: PropTypes.func,
-    rmVote: PropTypes.func,
+    upsertVote: PropTypes.object,
+    rmVote: PropTypes.object,
     count: PropTypes.number.isRequired,
-    initial: PropTypes.number,
-    userVote: PropTypes.number,
-    starToggler: PropTypes.func,
+    initial: PropTypes.string,
+    userVote: PropTypes.string,
+    starToggler: PropTypes.object,
     userFav: PropTypes.array
   }
 

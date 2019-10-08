@@ -51,7 +51,7 @@ class NearbyTab extends React.Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID)
+    if (this.watchID !== null) navigator.geolocation.clearWatch(this.watchID)
   }
 
   render() {

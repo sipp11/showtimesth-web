@@ -48,7 +48,7 @@ const BoxItem = styled.div`
 
 const roundRobinUrls = (currentUrl, choices) => {
   const ind = choices.indexOf(currentUrl)
-  if (ind == -1 || ind == choices.length - 1) return choices[0]
+  if (ind === -1 || ind === choices.length - 1) return choices[0]
   return choices[ind + 1]
 }
 
