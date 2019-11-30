@@ -1,68 +1,41 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was under the umbrella project, everyday.in.th, and it built with react and powered by GraphQL server.
 
-## Available Scripts
+Check out the production site at [showtimesth.com](https://showtimesth.com).
 
-In the project directory, you can run:
+## Why?
 
-### `npm start`
+It started way back since big cinema chains didn't really have a usable website. That was no longer the case; but we still think this is a better way to find information we want regardless of limiting to any chain. And, an honest reason is it's _fun_ to code.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## How to run
 
-### `npm test`
+While we prefer `yarn`, `npm` should work too.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    yarn start
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## I want to improve this
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Any PR welcomes or if you can't code, any suggestion or comment is also appreciated. Head to [issues](https://github.com/sipp11/showtimesth-web/issues) and start the conversation.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## FAQ
 
-### `npm run eject`
+Q: I'm an independent theater owner and I want to have my showtime info here too. How do I do that? Free?
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+A: Of course, free of any charge. Please contact us at
+* [Telegram: Zzyzx](https://t.me/ZzyzxIO)
+* Forum [cogto.com](https://cogto.com/c/projects/showtimesth)
+* [Facebook/zzyzx.io](https://facebook.com/zzyzx.io)
+* or open an issue [here](https://github.com/sipp11/showtimesth-web/issues)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Q: Is there any reservation service for theater owners?
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+A: It's in the plan too. Please contact us; we could work thing out.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Q: Will there be ads?
 
-## Learn More
+A: At some points, we would need $ to run the site too.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Do whatever you want with it. It definitely is not the cleaniest code nor the most efficient one, but it works good enough.
