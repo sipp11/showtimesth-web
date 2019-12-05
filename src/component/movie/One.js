@@ -7,6 +7,7 @@ import BasicContainer from "../../unstated/basic"
 import Loading from "../Loading"
 import { BrightBox, DimBox, FlexDimBox, Tab, ifttt } from "../../lib/piece"
 import { getYear, getNow } from "../../lib/dt"
+import { backdropSrc } from "../../lib/posterImage"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
@@ -18,7 +19,14 @@ import AnywhereTab from "./AnywhereTab"
 const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   display: flex;
   align-items: flex-end;
-  min-height: 170px;
+  min-height: ${props => (props.backdrop ? `330px` : "170px")};
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-image: ${props =>
+    props.backdrop
+      ? `linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("${props.backdrop}");`
+      : "none"};
 
   img {
     position: relative;
@@ -121,6 +129,7 @@ class Detail extends React.Component {
       id,
       slug,
       details,
+      images,
       videos,
       tags,
       votes_aggregate: { aggregate },
@@ -140,7 +149,7 @@ class Detail extends React.Component {
     const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
     return (
       <>
-        <FlexBrightBox marginBottom={0}>
+        <FlexBrightBox marginBottom={0} backdrop={backdropSrc(images)}>
           <div className="poster">
             <PosterItem {...movie} />
           </div>
