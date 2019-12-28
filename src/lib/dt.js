@@ -1,8 +1,8 @@
 import fecha from "fecha"
 
 const weekNo = day => {
-  var onejan = new Date(day.getFullYear(), 0, 1)
-  return Math.ceil(((day - onejan) / 86400000 + onejan.getDay() + 1) / 7)
+  var oneJan = new Date(day.getFullYear(), 0, 1)
+  return Math.ceil(((day - oneJan) / 86400000 + oneJan.getDay() + 1) / 7)
 }
 
 export const getYear = day => {

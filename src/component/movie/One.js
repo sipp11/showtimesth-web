@@ -19,12 +19,13 @@ import AnywhereTab from "./AnywhereTab"
 const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   display: flex;
   align-items: flex-end;
-  min-height: ${props => (props.backdrop ? `330px` : "170px")};
+  min-height: ${props =>
+    !props.liteVersion && props.backdrop ? `330px` : "170px"};
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
   background-image: ${props =>
-    props.backdrop
+    !props.liteVersion && props.backdrop
       ? `linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("${props.backdrop}");`
       : "none"};
 
@@ -121,6 +122,7 @@ class Detail extends React.Component {
   render() {
     const {
       userId,
+      liteVersion,
       movie,
       mutation: { upsertVote, rmVote, starToggler, addFav },
       tab: activeTab
@@ -149,7 +151,11 @@ class Detail extends React.Component {
     const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
     return (
       <>
-        <FlexBrightBox marginBottom={0} backdrop={backdropSrc(images)}>
+        <FlexBrightBox
+          marginBottom={0}
+          liteVersion={liteVersion}
+          backdrop={backdropSrc(images)}
+        >
           <div className="poster">
             <PosterItem {...movie} />
           </div>
@@ -333,6 +339,7 @@ const MovieOne = props => (
         <Detail
           tab={props.tab}
           movie={mov}
+          liteVersion={props.basic.getPref("liteVersion") === "true"}
           userId={props.basic.getUserId()}
           mutation={{ addFav, starToggler, watchToggler, upsertVote, rmVote }}
         />

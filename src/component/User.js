@@ -40,6 +40,15 @@ const Center = styled.div`
   }
 `
 
+const Settings = styled.div`
+  width: 80vh;
+  text-align: left;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #bac6d5;
+`
+
 const UserProfile = props => (
   <Query query={PROFILE} variables={{ userId: props.basic.getUserId() }}>
     {({ client, loading, error, data }) => {
@@ -101,6 +110,23 @@ const UserProfile = props => (
               Facebook
             </ReactGA.OutboundLink>
           </div>
+
+          <Settings>
+            <h3 className="is-3">
+              <b>SETTINGS</b>
+            </h3>
+            <div className="field">
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  defaultChecked={basic.getPref("liteVersion") === "true"}
+                  onChange={() => basic.togglePref("liteVersion")}
+                />{" "}
+                Lite version (Low bandwidth)
+              </label>
+            </div>
+          </Settings>
+
           <small className="muted">
             v{version}-{versionDate}
           </small>

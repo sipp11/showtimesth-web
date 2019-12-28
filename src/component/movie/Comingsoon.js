@@ -138,7 +138,13 @@ class ComingSoon extends React.Component {
           let coll = {}
           comingsoon_movies.map(ele => {
             const wk = getWeek(ele.release_date)
-            const diffWk = wk - thisWeek
+            let diffWk
+            if (+fecha.format(this.now, "MM") > 11) {
+              // add what's left off this year to next year
+              diffWk = 52 - (thisWeek % 100) + (wk % 100)
+            } else {
+              diffWk = wk - thisWeek
+            }
             const key = diffWk < 52 ? diffWk : 99
             if (!coll[key]) coll[key] = { label: weekWord(diffWk), items: [] }
             coll[key].items.push(ele)

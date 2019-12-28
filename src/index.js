@@ -23,7 +23,8 @@ ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID, {
 let basic = new BasicContainer({
   initialToken: localStorage.getItem("token") || null,
   initialUsername: localStorage.getItem("username") || null,
-  initialRoles: localStorage.getItem("roles") || null
+  initialRoles: localStorage.getItem("roles") || null,
+  initLiteVersion: localStorage.getItem("liteVersion") || "false"
 })
 
 const uploadLink = createUploadLink({
