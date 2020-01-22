@@ -7,8 +7,8 @@ export const imgSrc = imgs => {
     return `https://image.tmdb.org/t/p/w185${posters[0].url}`
   }
   // own
-  let loc = posters[0].location.split(".")[0]
-  return `https://s3-ap-southeast-1.amazonaws.com/showtimesth/_s_/${loc}-thumbnail-185x278-85.jpg`
+  let locs = posters[0].location.split(".")
+  return `https://showtimesth.s3.amazonaws.com/_s_/${locs[0]}-thumbnail-185x278-85.${locs[1]}`
 }
 
 export const backdropSrc = imgs => {
@@ -20,5 +20,5 @@ export const backdropSrc = imgs => {
   }
   // own
   let loc = backdrops[0].location
-  return `https://s3-ap-southeast-1.amazonaws.com/showtimesth/${loc}`
+  return `https://showtimesth.s3.amazonaws.com/${loc}`
 }

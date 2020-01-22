@@ -41,7 +41,7 @@ const Center = styled.div`
 `
 
 const Settings = styled.div`
-  width: 80vh;
+  width: 80vw;
   text-align: left;
   margin-top: 1rem;
   margin-bottom: 1rem;

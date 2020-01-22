@@ -1,7 +1,7 @@
 {
   "name": "stth-web",
-  "version": "1.6.0",
-  "versionDate": "2019-12-29",
+  "version": "1.6.3",
+  "versionDate": "2020-02-20",
   "private": true,
   "dependencies": {
     "apollo-cache-inmemory": "^1.5.1",
