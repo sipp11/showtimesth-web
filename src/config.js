@@ -4,5 +4,6 @@ export const PROVIDERS = [
   "google",
   "facebook",
   "instagram",
+  "line",
   "github"
 ]

@@ -97,7 +97,7 @@ export default class OAuth extends Component {
           onClick={this.startAuth}
           className={`${provider} ${disabled} button`}
         >
-          <FontAwesome name={provider} />
+          <FontAwesome name={provider === "line" ? "comment-o" : provider} />
         </button>
       </div>
     )

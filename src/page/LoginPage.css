@@ -127,6 +127,16 @@
   background: #ea4335;
 }
 
+/* Line */
+.login-page button.line {
+  border: 3px solid #ffffff;
+  background: #2AD700;
+}
+
+.login-page button.line:hover {
+  background: #00b900;
+}
+
 /* Facebook */
 .login-page button.facebook {
   border: 3px solid #ffffff;
