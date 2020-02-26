@@ -1,13 +1,12 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import { Subscribe } from "unstated"
 import BasicContainer from "../../unstated/basic"
-import { ListItem } from "../../lib/piece"
 import { isJwtExpired } from "../../lib/jwt"
 import Loading from "../Loading"
 import ListItemBlank from "../ListItemBlank"
+import { TheaterListItem } from "./List"
 
 export const FAV_THEATERS = gql`
   query FAV_THEATERS($userId: Int) {
@@ -25,22 +24,6 @@ export const FAV_THEATERS = gql`
     }
   }
 `
-
-export const TheaterListItem = props => (
-  <Link to={`/t/${props.theater.id}-${props.theater.slug}`}>
-    <ListItem>
-      <article>
-        <div className="content">
-          <p>
-            <strong>{props.theater.english}</strong>
-            <br />
-            <small>{props.theater.thai}</small>
-          </p>
-        </div>
-      </article>
-    </ListItem>
-  </Link>
-)
 
 const FavTheater = props => (
   <Query query={FAV_THEATERS} variables={{ userId: props.basic.getUserId() }}>

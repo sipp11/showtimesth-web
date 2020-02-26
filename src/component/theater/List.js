@@ -6,8 +6,7 @@ import ReactGA from "react-ga"
 import ListItemBlank from "../ListItemBlank"
 import Loading from "../Loading"
 import { TheaterResult } from "../search/Result"
-import { Breadcrum } from "../../lib/piece"
-
+import { Breadcrum, ListItem } from "../../lib/piece"
 
 const THEATER_OF_CHAIN_QUERY = gql`
   query THEATER_OF_CHAIN_QUERY($chainCode: String!, $offset: Int!) {
@@ -28,6 +27,22 @@ const THEATER_OF_CHAIN_QUERY = gql`
     }
   }
 `
+
+export const TheaterListItem = props => (
+  <Link to={`/t/${props.theater.id}-${props.theater.slug}`}>
+    <ListItem>
+      <article>
+        <div className="content">
+          <p>
+            <strong>{props.theater.english}</strong>
+            <br />
+            <small>{props.theater.thai}</small>
+          </p>
+        </div>
+      </article>
+    </ListItem>
+  </Link>
+)
 
 class List extends React.Component {
   state = {

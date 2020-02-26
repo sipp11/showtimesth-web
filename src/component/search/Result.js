@@ -3,7 +3,7 @@ import { SearchOps } from "./Ops"
 import Loading from "../Loading"
 import GoogleAds from "../GoogleAds"
 import ListItemBlank from "../ListItemBlank"
-import { TheaterListItem } from "../theater/Fav"
+import { TheaterListItem } from "../theater/List"
 import MovieListItem from "../movie/Item"
 
 export const TheaterResult = props => (
