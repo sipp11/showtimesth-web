@@ -219,10 +219,12 @@ const rmVote = ({ variables, render }) => (
 )
 
 export const TOP_FAV_MOVIES = gql`
-  query TOP_FAV_MOVIES($userId: Int!) {
-    people_movievote(
-      where: { user_id: { _eq: $userId }, points: { _gte: 9 } }
+  query TOP_FAV_MOVIES($userId: Int!, $offset: Int!) {
+    items: people_movievote(
+      where: { user_id: { _eq: $userId } }
       order_by: { points: desc, movie: { release_date: asc } }
+      limit: 30
+      offset: $offset
     ) {
       movie {
         id
@@ -237,6 +239,13 @@ export const TOP_FAV_MOVIES = gql`
         }
       }
       points
+    }
+    item_aggregate: people_movievote_aggregate(
+      where: { user_id: { _eq: $userId } }
+    ) {
+      aggregate {
+        count
+      }
     }
   }
 `

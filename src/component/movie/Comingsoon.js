@@ -28,7 +28,7 @@ const COMINGSOON_MOVIES = gql`
   }
 `
 
-const WeeklyBox = styled.div`
+export const WeeklyBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;

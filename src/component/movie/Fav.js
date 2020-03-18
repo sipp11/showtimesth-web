@@ -1,12 +1,14 @@
-import React from "react"
+import React, { Fragment } from "react"
 import FontAwesome from "react-fontawesome"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
+import { NetworkStatus } from "apollo-client"
 import BasicContainer from "../../unstated/basic"
-import PosterItem, { CenterPosterBox, LeftyPosterBox } from "./PosterItem"
+import PosterItem, { LeftyPosterBox } from "./PosterItem"
 import { FlexDimBox, Tab } from "../../lib/piece"
 import { dateFmt } from "../../lib/dt"
 import Loading from "../Loading"
+import { WeeklyBox } from "./Comingsoon"
 import { TOP_FAV_MOVIES, WATCHED_MOVIES } from "./Ops"
 import { Query } from "react-apollo"
 
@@ -23,37 +25,86 @@ const YearlyBox = styled.div`
 `
 
 const TopFavMovies = props => (
-  <Query query={TOP_FAV_MOVIES} variables={{ userId: props.basic.getUserId() }}>
-    {({ client, loading, error, data }) => {
+  <Query
+    query={TOP_FAV_MOVIES}
+    variables={{ userId: props.basic.getUserId(), offset: 0 }}
+  >
+    {({ client, loading, error, data, fetchMore, networkStatus }) => {
       if (loading) return <Loading />
-      if (
-        error ||
-        !data ||
-        !data.people_movievote ||
-        data.people_movievote.length === 0
-      ) {
-        // most of the time people_movievote is empty, then we should logout.
+      if (error || !data || !data.items || data.items.length === 0) {
+        // most of the time items is empty, then we should logout.
         setTimeout(() => {
           props.basic.logout(client)
           props.history.push("/login")
         }, 500)
         return <Loading />
       }
+
+      const { items, item_aggregate } = data
+      const { count } = item_aggregate.aggregate
+      const areMoreItems = items.length < count
+
+      const loadingMoreItems = networkStatus === NetworkStatus.fetchMore
+      const loadMoreItems = () => {
+        fetchMore({
+          variables: {
+            offset: items.length
+          },
+          updateQuery: (previousResult, { fetchMoreResult }) => {
+            if (!fetchMoreResult) {
+              return previousResult
+            }
+            return Object.assign({}, previousResult, {
+              // Append the new items results to the old one
+              items: [...previousResult.items, ...fetchMoreResult.items]
+            })
+          }
+        })
+      }
+
+      let ratings = []
+      let coll = {}
+      items.map(ele => {
+        if (ratings.indexOf(ele.points) === -1) ratings.push(ele.points)
+        if (coll[ele.points] === undefined) coll[ele.points] = []
+        coll[ele.points].push(ele)
+        return null
+      })
+
       return (
-        <CenterPosterBox>
-          {data.people_movievote.map((ele, key) => (
-            <PosterItem
-              key={`mvote-${key}`}
-              {...ele.movie}
-              value={
-                <div>
-                  {(ele.points / 2).toFixed(1)} <FontAwesome name="heart" />
-                </div>
-              }
-              show={true}
-            />
+        <WeeklyBox>
+          {ratings.map(k => (
+            <Fragment key={k}>
+              <h1>
+                {(k / 2).toFixed(1)} <FontAwesome name="heart" />
+              </h1>
+              <LeftyPosterBox>
+                {coll[k].map((ele, key) => (
+                  <PosterItem
+                    key={`mvote-${key}`}
+                    {...ele.movie}
+                    value={
+                      <div>
+                        {(ele.points / 2).toFixed(1)}{" "}
+                        <FontAwesome name="heart" />
+                      </div>
+                    }
+                    show={true}
+                  />
+                ))}
+              </LeftyPosterBox>
+            </Fragment>
           ))}
-        </CenterPosterBox>
+          {areMoreItems && (
+            <button
+              className="button is-success is-small"
+              onClick={() => loadMoreItems()}
+              disabled={loadingMoreItems}
+            >
+              {loadingMoreItems ? "Loading..." : "Show More"}
+            </button>
+          )}
+        </WeeklyBox>
       )
     }}
   </Query>
