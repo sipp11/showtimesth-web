@@ -1,7 +1,7 @@
 {
   "name": "stth-web",
-  "version": "1.6.5",
-  "versionDate": "2020-03-19",
+  "version": "1.7.0",
+  "versionDate": "2020-03-24",
   "private": true,
   "dependencies": {
     "apollo-cache-inmemory": "^1.5.1",
@@ -28,11 +28,13 @@
     "serialize-javascript": "^3.0.0",
     "socket.io-client": "^2.2.0",
     "styled-components": "^5.0.1",
-    "unstated": "^2.1.1"
+    "unstated": "^2.1.1",
+    "workbox-sw": "^5.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "sw": "node src/sw-build.js",
+    "build": "react-scripts build && yarn sw",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev_publish": "node script/publish_10z",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "flow-bin": "^0.120.1",
-    "unstated-debug": "^0.4.0"
+    "unstated-debug": "^0.4.0",
+    "workbox-build": "^5.1.1"
   }
 }
