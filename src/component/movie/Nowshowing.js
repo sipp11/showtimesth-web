@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import fecha from "fecha"
@@ -25,7 +26,13 @@ const NOWSHOWING_MOVIES = gql`
   }
 `
 
-const NowShowingMovies = props => (
+const helmet = (
+  <Helmet>
+    <title>Now showing | ShowtimesTH</title>
+  </Helmet>
+)
+
+const NowShowingMovies = (props) => (
   <Query
     query={NOWSHOWING_MOVIES}
     variables={{ day: fecha.format(new Date(), "YYYY-MM-DD") }}
@@ -34,11 +41,21 @@ const NowShowingMovies = props => (
       if (loading) return <Loading />
       if (!isJwtExpired(error, client, props.basic, props.history))
         return <Loading />
-      if (!data || !data.nowshowing_movies)
-        return <ListItemBlank message="No data yet" />
+      if (
+        !data ||
+        !data.nowshowing_movies ||
+        data.nowshowing_movies.length === 0
+      )
+        return (
+          <>
+            {helmet}
+            <ListItemBlank message="ไม่พบรอบฉายในวันนี้" />
+          </>
+        )
       return (
         <PosterBox>
-          {data.nowshowing_movies.map(ele => (
+          {helmet}
+          {data.nowshowing_movies.map((ele) => (
             <PosterItem key={`p-${ele.id}`} {...ele} />
           ))}
         </PosterBox>

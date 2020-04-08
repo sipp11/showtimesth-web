@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import styled from "styled-components"
 import { Subscribe } from "unstated"
 import FontAwesome from "react-fontawesome"
@@ -16,15 +17,15 @@ import FavTab from "./FavTab"
 import NearbyTab from "./NearbyTab"
 import AnywhereTab from "./AnywhereTab"
 
-const FlexBrightBox = styled(props => <BrightBox {...props} />)`
+const FlexBrightBox = styled((props) => <BrightBox {...props} />)`
   display: flex;
   align-items: flex-end;
-  min-height: ${props =>
+  min-height: ${(props) =>
     !props.liteVersion && props.backdrop ? `330px` : "170px"};
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  background-image: ${props =>
+  background-image: ${(props) =>
     !props.liteVersion && props.backdrop
       ? `linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("${props.backdrop}");`
       : "none"};
@@ -46,7 +47,7 @@ const FlexBrightBox = styled(props => <BrightBox {...props} />)`
   }
 `
 
-export const DetailDimBox = styled(props => <DimBox {...props} />)`
+export const DetailDimBox = styled((props) => <DimBox {...props} />)`
   div.video {
     display: inline-block;
     margin: 0 10px 10px 0;
@@ -83,19 +84,19 @@ const ButtonContainer = styled.span`
 `
 
 export const Tags = styled.span`
-  margin-bottom: ${props => `${props.marginBottom} !important` || "1rem"};
+  margin-bottom: ${(props) => `${props.marginBottom} !important` || "1rem"};
   span.tag {
     font-size: 0.7rem;
     background: transparent;
     color: #cbd3dd;
     border: 1px solid #cbd3dd;
-    margin-bottom: ${props => `${props.marginBottom} !important` || "0.5rem"};
+    margin-bottom: ${(props) => `${props.marginBottom} !important` || "0.5rem"};
   }
 `
 
 class Detail extends React.Component {
   state = {
-    favLoading: false
+    favLoading: false,
   }
 
   toggleFavLoading = () => {
@@ -104,7 +105,7 @@ class Detail extends React.Component {
 
   componentDidMount() {
     const {
-      movie: { id, slug }
+      movie: { id, slug },
     } = this.props
     ReactGA.pageview(`/m/${id}-${slug}`)
   }
@@ -114,7 +115,7 @@ class Detail extends React.Component {
       ReactGA.event({
         category: "Movie",
         action: "Switch tab",
-        label: newProps.tab
+        label: newProps.tab,
       })
     }
   }
@@ -125,7 +126,7 @@ class Detail extends React.Component {
       liteVersion,
       movie,
       mutation: { upsertVote, rmVote, starToggler, addFav },
-      tab: activeTab
+      tab: activeTab,
     } = this.props
     const {
       id,
@@ -135,26 +136,45 @@ class Detail extends React.Component {
       videos,
       tags,
       votes_aggregate: { aggregate },
-      favs
+      favs,
     } = movie
     let selDetail = {}
-    if (details.filter(d => d.language === "th").length > 0) {
-      selDetail = details.filter(d => d.language === "th")[0]
+    if (details.filter((d) => d.language === "th").length > 0) {
+      selDetail = details.filter((d) => d.language === "th")[0]
     } else if (details.length > 0) {
       selDetail = details[0]
     }
-    const likeCount = favs.filter(f => f.star).length
-    const watchCount = favs.filter(f => f.watched).length
-    const userFav = favs.filter(f => f.user_id === userId)
+    const likeCount = favs.filter((f) => f.star).length
+    const watchCount = favs.filter((f) => f.watched).length
+    const userFav = favs.filter((f) => f.user_id === userId)
     const uf = userFav
-    const hasWatched = uf.length > 0 && uf.filter(f => f.watched).length > 0
-    const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
+    const hasWatched = uf.length > 0 && uf.filter((f) => f.watched).length > 0
+    const isStarred = uf.length > 0 && uf.filter((f) => f.star).length > 0
+
+    const title = `${movie.title} (${getYear(
+      movie.release_date
+    )}) | ShowtimesTH`
+    const bdImg = backdropSrc(images)
     return (
       <>
+        <Helmet>
+          <title>{title}</title>
+          <meta property="og:title" content={title} />
+          <meta
+            property="og:description"
+            content={`หนังเรื่อง ${movie.title}`}
+          />
+          <meta
+            property="og:url"
+            content={`${process.env.REACT_APP_FRONTEND_URL}/m/${id}-${slug}`}
+          />
+          <meta property="og:image" content={bdImg} />
+        </Helmet>
+
         <FlexBrightBox
           marginBottom={0}
           liteVersion={liteVersion}
-          backdrop={backdropSrc(images)}
+          backdrop={bdImg}
         >
           <div className="poster">
             <PosterItem {...movie} />
@@ -208,16 +228,16 @@ class Detail extends React.Component {
                     star: false,
                     starredSince: null,
                     watched: true,
-                    watchedSince: getNow()
+                    watchedSince: getNow(),
                   }
                   await addFav.mutation({
-                    variables: vars
+                    variables: vars,
                   })
 
                   ReactGA.event({
                     category: "Movie",
                     action: `Add watch`,
-                    value: id
+                    value: id,
                   })
                   this.toggleFavLoading()
                   return
@@ -227,14 +247,14 @@ class Detail extends React.Component {
                   variables: {
                     id: userFav[0].id,
                     watched: !hasWatched,
-                    watchedSince: hasWatched ? null : getNow()
-                  }
+                    watchedSince: hasWatched ? null : getNow(),
+                  },
                 })
 
                 ReactGA.event({
                   category: "Movie",
                   action: `${hasWatched ? "Remove" : "Add"} watch`,
-                  value: id
+                  value: id,
                 })
                 this.toggleFavLoading()
               }}
@@ -303,16 +323,16 @@ class Detail extends React.Component {
   }
 }
 
-const extractMovieId = id => {
+const extractMovieId = (id) => {
   if (isNaN(id)) return id.split("-")[0]
   return id
 }
 
-const MovieOne = props => (
+const MovieOne = (props) => (
   <MovieOps
     variables={{
       movieId: extractMovieId(props.id),
-      userId: props.basic.getUserId() || -1
+      userId: props.basic.getUserId() || -1,
     }}
   >
     {({
@@ -321,7 +341,7 @@ const MovieOne = props => (
       watchToggler,
       upsertVote,
       rmVote,
-      movie: { result }
+      movie: { result },
     }) => {
       const { loading, data } = result
       if (loading) return <Loading />
@@ -348,8 +368,8 @@ const MovieOne = props => (
   </MovieOps>
 )
 
-export default props => (
+export default (props) => (
   <Subscribe to={[BasicContainer]}>
-    {basic => <MovieOne {...props} basic={basic} />}
+    {(basic) => <MovieOne {...props} basic={basic} />}
   </Subscribe>
 )

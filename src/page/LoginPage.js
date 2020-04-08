@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { Helmet } from "react-helmet"
 import { Subscribe } from "unstated"
 import styled from "styled-components"
 import ReactGA from "react-ga"
@@ -41,11 +42,14 @@ class LoginPage extends Component {
 
     return (
       <PageContainer>
+        <Helmet>
+          <title>Sign in | ShowtimesTH</title>
+        </Helmet>
         <Navbar location={this.props.location} />
         <h1>Login</h1>
 
         <Box className="login-page">
-          {PROVIDERS.map(provider => (
+          {PROVIDERS.map((provider) => (
             <OAuth
               provider={provider}
               key={provider}
@@ -65,10 +69,10 @@ class LoginPage extends Component {
   }
 }
 
-export default props => {
+export default (props) => {
   return (
     <Subscribe to={[BasicContainer]}>
-      {basic => <LoginPage {...props} basic={basic} />}
+      {(basic) => <LoginPage {...props} basic={basic} />}
     </Subscribe>
   )
 }

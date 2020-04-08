@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import fecha from "fecha"
@@ -40,7 +41,7 @@ export const WeeklyBox = styled.div`
   }
 `
 
-const weekWord = wk => {
+const weekWord = (wk) => {
   if (wk > 52) return "Next year"
   if (wk === 0) return "This week"
   if (wk === 1) return "Next week"
@@ -53,7 +54,7 @@ class ComingSoon extends React.Component {
   state = {
     items: [],
     bottomReached: false,
-    lastOffset: -1
+    lastOffset: -1,
   }
 
   isBottom(el) {
@@ -81,7 +82,7 @@ class ComingSoon extends React.Component {
     ReactGA.event({
       category: "Movie",
       action: "Load more",
-      label: "comingsoon"
+      label: "comingsoon",
     })
     setTimeout(() => {
       this.setState({ bottomReached: false, lastOffset: offset })
@@ -90,17 +91,17 @@ class ComingSoon extends React.Component {
       fetchMore({
         variables: {
           day: this.today,
-          offset: offset
+          offset: offset,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev
           return Object.assign({}, prev, {
             comingsoon_movies: [
               ...prev.comingsoon_movies,
-              ...fetchMoreResult.comingsoon_movies
-            ]
+              ...fetchMoreResult.comingsoon_movies,
+            ],
           })
-        }
+        },
       })
       // delay again not to track scrolling until new one arrived
       setTimeout(() => {
@@ -118,7 +119,7 @@ class ComingSoon extends React.Component {
         query={COMINGSOON_MOVIES}
         variables={{
           day: this.today,
-          offset: 0
+          offset: 0,
         }}
       >
         {({ client, loading, error, data, fetchMore }) => {
@@ -136,7 +137,7 @@ class ComingSoon extends React.Component {
           // process movies into weekly
           const thisWeek = getWeek(this.now)
           let coll = {}
-          comingsoon_movies.map(ele => {
+          comingsoon_movies.map((ele) => {
             const wk = getWeek(ele.release_date)
             let diffWk
             if (+fecha.format(this.now, "MM") > 11) {
@@ -153,12 +154,15 @@ class ComingSoon extends React.Component {
 
           return (
             <WeeklyBox id="weekly-box">
-              {Object.keys(coll).map(wk => {
+              <Helmet>
+                <title>Coming soon | ShowtimesTH</title>
+              </Helmet>
+              {Object.keys(coll).map((wk) => {
                 return (
                   <div key={`wk-${wk}`}>
                     <h1>{coll[wk].label}</h1>
                     <PosterBox>
-                      {coll[wk].items.map(ele => (
+                      {coll[wk].items.map((ele) => (
                         <PosterItem
                           key={`p-${ele.id}`}
                           {...ele}

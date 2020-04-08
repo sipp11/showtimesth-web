@@ -1,10 +1,10 @@
 {
   "short_name": "ShowtimesTH",
-  "name": "ShowtimesTH: the only one you need",
+  "name": "ShowtimesTH",
   "icons": [
     {
       "src": "https://showtimes.everyday.in.th/favicon-96x96.png",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "96x96",
       "type": "image/x-icon"
     },
     {

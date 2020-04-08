@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { Helmet } from "react-helmet"
 import FontAwesome from "react-fontawesome"
 import ReactGA from "react-ga"
 import Navbar from "../component/Navbar"
@@ -10,8 +11,8 @@ class FavPage extends Component {
   componentDidMount() {
     const {
       match: {
-        params: { what }
-      }
+        params: { what },
+      },
     } = this.props
     // there is only 2 pages: theater (default) or movie
     const favWhat = what !== "movie" ? "theater" : "movie"
@@ -46,7 +47,7 @@ class FavPage extends Component {
     const {
       location,
       history,
-      match: { params }
+      match: { params },
     } = this.props
     const { what } = params
     // there is only 2 pages: theater (default) or movie
@@ -54,6 +55,9 @@ class FavPage extends Component {
 
     return (
       <PageContainer>
+        <Helmet>
+          <title>Fav | ShowtimesTH</title>
+        </Helmet>
         <Navbar location={location} />
         {isDefault && this.renderFavTheater()}
         {!isDefault && this.renderFavMovie(params, history)}

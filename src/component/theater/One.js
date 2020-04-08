@@ -1,4 +1,5 @@
 import React, { Fragment } from "react"
+import { Helmet } from "react-helmet"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import { Link } from "react-router-dom"
@@ -83,7 +84,7 @@ const Button = styled.button`
   padding-top: 0;
 `
 
-export const ScreenAndTime = props => (
+export const ScreenAndTime = (props) => (
   <ScreenBox>
     <ScreenInfo>
       {props.one.technology !== "2d" && (
@@ -103,14 +104,14 @@ export const ScreenAndTime = props => (
       )}
     </ScreenInfo>
     <ScreenTime>
-      {props.one.time.split(",").map(i => (
+      {props.one.time.split(",").map((i) => (
         <span key={`mst-${props.ind}-${i}`}>{i}</span>
       ))}
     </ScreenTime>
   </ScreenBox>
 )
 
-export const MovieScreenAndTime = props => {
+export const MovieScreenAndTime = (props) => {
   const { one } = props
   return (
     <DimBox>
@@ -155,12 +156,12 @@ export const MovieScreenAndTime = props => {
 
 class Detail extends React.Component {
   state = {
-    favLoading: false
+    favLoading: false,
   }
 
   componentDidMount() {
     const {
-      theater: { id, slug }
+      theater: { id, slug },
     } = this.props
     ReactGA.pageview(`/t/${id}-${slug}`)
   }
@@ -182,11 +183,11 @@ class Detail extends React.Component {
       showtimes,
       favs,
       favs_aggregate: {
-        aggregate: { count }
-      }
+        aggregate: { count },
+      },
     } = theater
     let m = {}
-    showtimes.map(ele => {
+    showtimes.map((ele) => {
       if (!m[ele.movie.id]) {
         m[ele.movie.id] = []
       }
@@ -195,10 +196,27 @@ class Detail extends React.Component {
     })
 
     const favCount = count
-    const userFav = favs.filter(f => f.user_id === userId)
+    const userFav = favs.filter((f) => f.user_id === userId)
 
     return (
       <>
+        <Helmet>
+          <title>{`${thai} | ShowtimesTH`}</title>
+          <meta property="og:title" content={`${thai} | ShowtimesTH`} />
+          <meta
+            property="og:description"
+            content={`เช็ครอบหนังสำหรับ ${thai} / ${english}`}
+          />
+          <meta
+            property="og:url"
+            content={`${process.env.REACT_APP_FRONTEND_URL}/t/${id}-${code}`}
+          />
+          <meta
+            property="og:image"
+            content="https://static.10ninox.com/showtimes-web-icon.png"
+          />
+        </Helmet>
+
         <Breadcrum
           className="breadcrumb has-bullet-separator is-centered"
           aria-label="breadcrumbs"
@@ -239,28 +257,28 @@ class Detail extends React.Component {
               let vars
               if (userFav.length === 0) {
                 vars = {
-                  theaterId: id
+                  theaterId: id,
                 }
                 await addFav.mutation({
-                  variables: vars
+                  variables: vars,
                 })
                 this.toggleFavLoading()
                 ReactGA.event({
                   category: "Theater",
                   action: "Add fav",
-                  value: id
+                  value: id,
                 })
                 return
               }
               await unFav.mutation({
                 variables: {
-                  id: userFav[0].id
-                }
+                  id: userFav[0].id,
+                },
               })
               ReactGA.event({
                 category: "Theater",
                 action: "Remove fav",
-                value: id
+                value: id,
               })
               this.toggleFavLoading()
             }}
@@ -291,17 +309,17 @@ class Detail extends React.Component {
   }
 }
 
-const extractTheaterId = id => {
+const extractTheaterId = (id) => {
   if (isNaN(id)) return id.split("-")[0]
   return id
 }
 
-const TheaterOne = props => (
+const TheaterOne = (props) => (
   <TheaterOps
     variables={{
       theaterId: extractTheaterId(props.id),
       day: getToday(),
-      userId: props.basic.getUserId() || -1
+      userId: props.basic.getUserId() || -1,
     }}
   >
     {({ addFav, unFav, theater: { result } }) => {
@@ -323,8 +341,8 @@ const TheaterOne = props => (
   </TheaterOps>
 )
 
-export default props => (
+export default (props) => (
   <Subscribe to={[BasicContainer]}>
-    {basic => <TheaterOne {...props} basic={basic} />}
+    {(basic) => <TheaterOne {...props} basic={basic} />}
   </Subscribe>
 )

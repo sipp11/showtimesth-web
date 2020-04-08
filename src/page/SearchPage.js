@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { Helmet } from "react-helmet"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
 import ReactGA from "react-ga"
@@ -21,10 +22,10 @@ class SearchPage extends Component {
   state = {
     loading: false,
     query: "",
-    viewport: {}
+    viewport: {},
   }
 
-  recordLivePosition = position => {
+  recordLivePosition = (position) => {
     // don't update if it's too recent. Only 1 min at a time
     const { viewport } = this.state
     if (
@@ -35,10 +36,10 @@ class SearchPage extends Component {
         viewport: {
           coords: {
             lat: position.coords.latitude,
-            lon: position.coords.longitude
+            lon: position.coords.longitude,
           },
-          timestamp: position.timestamp
-        }
+          timestamp: position.timestamp,
+        },
       })
     }
   }
@@ -48,19 +49,19 @@ class SearchPage extends Component {
     ReactGA.pageview(`/search`)
 
     navigator.geolocation.getCurrentPosition(
-      position => {
+      (position) => {
         this.recordLivePosition(position)
       },
-      error => {
+      (error) => {
         //console.log("nav.position", error)
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 }
     )
     this.watchID = navigator.geolocation.watchPosition(
-      position => {
+      (position) => {
         this.recordLivePosition(position)
       },
-      error => {
+      (error) => {
         //console.log("nav.position", error)
       }
     )
@@ -74,7 +75,7 @@ class SearchPage extends Component {
     this.setState({ loading: !this.state.loading })
   }
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ query: e.target.value.trim() })
     /* ReactGA.event({
       category: "Search",
@@ -88,7 +89,7 @@ class SearchPage extends Component {
     this.setState({ query: "#nearby" })
     ReactGA.event({
       category: "Search",
-      action: "Search nearby"
+      action: "Search nearby",
     })
   }
 
@@ -99,10 +100,13 @@ class SearchPage extends Component {
     const nearbySkip = query.length === 0 || query !== "#nearby"
     return (
       <PageContainer>
+        <Helmet>
+          <title>Search | ShowtimesTH</title>
+        </Helmet>
         <Navbar location={this.props.location} />
         <div className={`control has-icons-left is-large ${isLoadingCls}`}>
           <Input
-            ref={input => {
+            ref={(input) => {
               this.nameInput = input
             }}
             onChange={this.handleInputChange.bind(this)}
