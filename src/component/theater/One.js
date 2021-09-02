@@ -15,75 +15,6 @@ import { DimBox, BrightBox, Breadcrum, ifttt } from "../../lib/piece"
 import { TheaterOps, ReservationLink } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
 
-const FigImage = styled.figure`
-  display: block;
-  position: relative;
-  width: 95px;
-  height: 135px;
-
-  img {
-    height: 100%;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 0;
-    display: block;
-  }
-`
-
-const Desc = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  color: #cbd3dd;
-`
-
-const ScreenBox = styled.div`
-  display: flex;
-  overflow: hidden;
-  border-bottom: 1px #1f2f42 solid;
-
-  div {
-    padding: 0.5rem;
-  }
-
-  @media screen and (max-width: 450px) {
-    flex-direction: column;
-    border-bottom: 0px;
-
-    div {
-      padding: 0.3rem 0.5rem;
-    }
-  }
-`
-const ScreenInfo = styled.div``
-const ScreenTime = styled.div`
-  flex: 1;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  border-left: 1px #1f2f42 solid;
-  font-family: Menlo, Monaco, "Courier New", monospace;
-
-  span {
-    width: 4rem;
-  }
-
-  @media screen and (max-width: 450px) {
-    border-left: 2px #1f2f42 solid;
-  }
-`
-
-const Button = styled.button`
-  margin: 0 0.3rem;
-  font-weight: 600;
-  padding-bottom: 0;
-  padding-left: 0.75em;
-  padding-right: 0.75em;
-  padding-top: 0;
-`
-
 export const ScreenAndTime = (props) => (
   <ScreenBox>
     <ScreenInfo>
@@ -346,3 +277,72 @@ export default (props) => (
     {(basic) => <TheaterOne {...props} basic={basic} />}
   </Subscribe>
 )
+
+const FigImage = styled.figure`
+  display: block;
+  position: relative;
+  width: 95px;
+  height: 135px;
+
+  img {
+    height: 100%;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: block;
+  }
+`
+
+const Desc = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #cbd3dd;
+`
+
+const ScreenBox = styled.div`
+  display: flex;
+  overflow: hidden;
+  border-bottom: 1px #1f2f42 solid;
+
+  div {
+    padding: 0.5rem;
+  }
+
+  @media screen and (max-width: 450px) {
+    flex-direction: column;
+    border-bottom: 0px;
+
+    div {
+      padding: 0.3rem 0.5rem;
+    }
+  }
+`
+const ScreenInfo = styled.div``
+const ScreenTime = styled.div`
+  flex: 1;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  border-left: 1px #1f2f42 solid;
+  font-family: Menlo, Monaco, "Courier New", monospace;
+
+  span {
+    width: 4rem;
+  }
+
+  @media screen and (max-width: 450px) {
+    border-left: 2px #1f2f42 solid;
+  }
+`
+
+const Button = styled.button`
+  margin: 0 0.3rem;
+  font-weight: 600;
+  padding-bottom: 0;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  padding-top: 0;
+`

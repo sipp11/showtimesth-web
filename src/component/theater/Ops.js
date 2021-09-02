@@ -39,7 +39,7 @@ export const FAV_THEATER_AND_A_MOVIE = gql`
 
 export const favTheaterAndAMovieTime = ({ variables, render }) => (
   <Query query={FAV_THEATER_AND_A_MOVIE} variables={variables}>
-    {result => render({ result })}
+    {(result) => render({ result })}
   </Query>
 )
 
@@ -90,7 +90,7 @@ export const THEATERS_WITH_A_MOVIE = gql`
 
 export const theatersWithAMovieTime = ({ variables, render }) => (
   <Query query={THEATERS_WITH_A_MOVIE} variables={variables}>
-    {result => render({ result })}
+    {(result) => render({ result })}
   </Query>
 )
 
@@ -133,12 +133,12 @@ export const NEARBY_THEATERS_AND_A_MOVIE = gql`
 
 export const nearbyTheatersAndAMovieTime = ({ variables, render }) => (
   <Query query={NEARBY_THEATERS_AND_A_MOVIE} variables={variables}>
-    {result => render({ result })}
+    {(result) => render({ result })}
   </Query>
 )
 
 const THEATER_QUERY = gql`
-  query THEATER_QUERY($theaterId: Int!, $day: date, $userId: Int) {
+  query THEATER_QUERY($theaterId: Int!, $day: date) {
     theater_theater(where: { id: { _eq: $theaterId } }) {
       id
       slug
@@ -205,25 +205,28 @@ const THEATER_ADD_FAV = gql`
   }
 `
 
-const addFav = ({ variables, render }) => (
-  <Mutation
-    mutation={THEATER_ADD_FAV}
-    refetchQueries={[
-      {
-        query: THEATER_QUERY,
-        variables
-      },
-      {
-        query: FAV_THEATERS,
-        variables: {
-          userId: variables.userId
-        }
-      }
-    ]}
-  >
-    {(mutation, result) => render({ mutation, result })}
-  </Mutation>
-)
+const addFav = ({ variables, render }) => {
+  const { userId, ...v } = variables
+  return (
+    <Mutation
+      mutation={THEATER_ADD_FAV}
+      refetchQueries={[
+        {
+          query: THEATER_QUERY,
+          variables: v,
+        },
+        {
+          query: FAV_THEATERS,
+          variables: {
+            userId: variables.userId,
+          },
+        },
+      ]}
+    >
+      {(mutation, result) => render({ mutation, result })}
+    </Mutation>
+  )
+}
 
 const THEATER_UN_FAV = gql`
   mutation THEATER_UN_FAV($id: Int!) {
@@ -233,25 +236,28 @@ const THEATER_UN_FAV = gql`
   }
 `
 
-const unFav = ({ variables, render }) => (
-  <Mutation
-    mutation={THEATER_UN_FAV}
-    refetchQueries={[
-      {
-        query: THEATER_QUERY,
-        variables
-      },
-      {
-        query: FAV_THEATERS,
-        variables: {
-          userId: variables.userId
-        }
-      }
-    ]}
-  >
-    {(mutation, result) => render({ mutation, result })}
-  </Mutation>
-)
+const unFav = ({ variables, render }) => {
+  const { userId, ...v } = variables
+  return (
+    <Mutation
+      mutation={THEATER_UN_FAV}
+      refetchQueries={[
+        {
+          query: THEATER_QUERY,
+          variables: v,
+        },
+        {
+          query: FAV_THEATERS,
+          variables: {
+            userId: variables.userId,
+          },
+        },
+      ]}
+    >
+      {(mutation, result) => render({ mutation, result })}
+    </Mutation>
+  )
+}
 
 const StyledOutboundLink = styled(ReactGA.OutboundLink)`
   margin: 0 0.3rem;
@@ -269,7 +275,7 @@ const StyledOutboundLink = styled(ReactGA.OutboundLink)`
   }
 `
 
-export const ReservationLink = props => {
+export const ReservationLink = (props) => {
   const { chain, code } = props
   const reservableChains = ["sf", "major"]
   if (reservableChains.indexOf(chain.code) === -1) {
@@ -277,7 +283,7 @@ export const ReservationLink = props => {
   }
   let urlTmpl = {
     major: `https://www.majorcineplex.com/booking/search-results.php?cinemaId_1=`,
-    sf: `https://www.sfcinemacity.com/showtime/cinema/`
+    sf: `https://www.sfcinemacity.com/showtime/cinema/`,
   }
   const url = `${urlTmpl[chain.code]}${code}`
   return (
@@ -295,9 +301,12 @@ export const ReservationLink = props => {
 export const TheaterOps = adopt({
   addFav,
   unFav,
-  theater: ({ variables, render }) => (
-    <Query query={THEATER_QUERY} variables={variables}>
-      {result => render({ result })}
-    </Query>
-  )
+  theater: ({ variables, render }) => {
+    const { userId, ...v } = variables
+    return (
+      <Query query={THEATER_QUERY} variables={v}>
+        {(result) => render({ result })}
+      </Query>
+    )
+  },
 })

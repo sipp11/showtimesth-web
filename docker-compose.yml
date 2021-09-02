@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  web:
+    image: dk-reg.10ninox.com/sipp11/stth-web:latest
+    expose:
+      - 80
+    networks:
+      - ninox-net
+    environment:
+      REACT_APP_GRAPHQL_URI: ${REACT_APP_GRAPHQL_URI}
+      REACT_APP_BASE_URL: ${REACT_APP_BASE_URL}
+      REACT_APP_GA_TRACKING_ID: ${REACT_APP_GA_TRACKING_ID}
+      REACT_APP_FAV_URL: ${REACT_APP_FAV_URL}
+      REACT_APP_AD_CLIENT: ${REACT_APP_AD_CLIENT}
+      REACT_APP_MEDIA_UPLOAD_URL: ${REACT_APP_MEDIA_UPLOAD_URL}
+      REACT_APP_MEDIA_URL: ${REACT_APP_MEDIA_URL}
+      PUBLIC_URL: ${PUBLIC_URL}
+
+networks:
+  ninox-net:
+    external: true

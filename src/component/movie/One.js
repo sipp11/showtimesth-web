@@ -12,10 +12,10 @@ import { backdropSrc } from "../../lib/posterImage"
 import PosterItem from "./PosterItem"
 import { MovieOps } from "./Ops"
 import ListItemBlank from "../ListItemBlank"
-import DetailTab from "./DetailTab"
 import FavTab from "./FavTab"
 import NearbyTab from "./NearbyTab"
 import AnywhereTab from "./AnywhereTab"
+import DetailTab from "./DetailTab"
 
 const FlexBrightBox = styled((props) => <BrightBox {...props} />)`
   display: flex;
