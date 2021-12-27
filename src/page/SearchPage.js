@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { Helmet } from "react-helmet"
 import styled from "styled-components"
 import FontAwesome from "react-fontawesome"
+import { debounce } from "lodash"
 import ReactGA from "react-ga"
 import Navbar from "../component/Navbar"
 import { PageContainer } from "../lib/piece"
@@ -75,13 +76,26 @@ class SearchPage extends Component {
     this.setState({ loading: !this.state.loading })
   }
 
+  handleQueryChange = (txt) => {
+    this.setState({ query: txt })
+  }
+
+  throttled = debounce(
+    (q) => {
+      this.setState({ query: q })
+      // ReactGA.event({
+      //   category: "Search",
+      //   action: "Search with text",
+      //   value: q,
+      // })
+    },
+    500,
+    { trailing: true }
+  )
+
   handleInputChange = (e) => {
-    this.setState({ query: e.target.value.trim() })
-    /* ReactGA.event({
-      category: "Search",
-      action: "Search with text",
-      value: e.target.value.trim()
-    }) */
+    const query = e.target.value.trim()
+    this.throttled(query)
   }
 
   activateNearBySearch = () => {
