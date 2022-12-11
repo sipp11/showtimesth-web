@@ -42,8 +42,8 @@ const Button = styled.button`
   }
 `
 
-const StyledRating = styled(props => <Rating {...props} />)`
-  color: ${props => (props.hasVoted ? "#ebdf63" : "#cbd3dd")};
+const StyledRating = styled((props) => <Rating {...props} />)`
+  color: ${(props) => (props.hasVoted ? "#ebdf63" : "#cbd3dd")};
 `
 
 const CountSpan = styled.span`
@@ -60,7 +60,7 @@ class RRating extends React.Component {
     initial: PropTypes.string,
     userVote: PropTypes.string,
     starToggler: PropTypes.object,
-    userFav: PropTypes.array
+    userFav: PropTypes.array,
   }
 
   render() {
@@ -73,12 +73,12 @@ class RRating extends React.Component {
       addFav,
       starToggler,
       rmVote,
-      userVote
+      userVote,
     } = this.props
     // if user voted, then show user's rating -- not average
     const initailRating = userVote || initial || 0
     const hasVoted = userVote !== null
-    const isStarred = uf.length > 0 && uf.filter(f => f.star).length > 0
+    const isStarred = uf.length > 0 && uf.filter((f) => f.star).length > 0
 
     return (
       <Holder className={hasVoted ? "voted" : ""}>
@@ -90,7 +90,17 @@ class RRating extends React.Component {
           start={0}
           end={5}
           initialRating={initailRating}
-          onClick={async val => {
+          onClick={async (val) => {
+            // if (!userVote) {
+            //   // no user yet, then do nothing
+            //   ReactGA.event({
+            //     category: "Movie",
+            //     action: `${isStarred ? "Remove" : "Add"} star`,
+            //     value: movieId,
+            //   })
+            //   console.log("Login ก่อนนะถึงจะทำให้คะแนนบันทึกลงระบบได้จริงๆ")
+            //   return
+            // }
             const points = (val * 2).toFixed(0)
             const isLiked = points >= 5
 
@@ -102,49 +112,60 @@ class RRating extends React.Component {
                 star: true,
                 starredSince: getNow(),
                 watched: false,
-                watchedSince: null
+                watchedSince: null,
               }
-              await addFav.mutation({
-                variables: vars
-              })
+              try {
+                await addFav.mutation({
+                  variables: vars,
+                })
+              } catch (e) {
+                console.log("Login ก่อนนะถึงจะทำให้คะแนนบันทึกลงระบบได้จริงๆ")
+              }
               ReactGA.event({
                 category: "Movie",
                 action: `Add star`,
-                value: movieId
+                value: movieId,
               })
             } else {
-              await starToggler.mutation({
-                variables: {
-                  id: uf[0].id,
-                  star: isLiked,
-                  starredSince: isStarred ? null : getNow()
-                }
-              })
-
+              try {
+                await starToggler.mutation({
+                  variables: {
+                    id: uf[0].id,
+                    star: isLiked,
+                    starredSince: isStarred ? null : getNow(),
+                  },
+                })
+              } catch (e) {
+                console.log("Login ก่อนนะถึงจะทำให้คะแนนบันทึกลงระบบได้จริงๆ")
+              }
               // [1] assume user like the movie if point >= 5
               ReactGA.event({
                 category: "Movie",
                 action: `${isStarred ? "Remove" : "Add"} star`,
-                value: movieId
+                value: movieId,
               })
             }
 
             /* ------- RATING ----------- */
 
             // [1] dealing with rating
-            await upsertVote.mutation({
-              variables: {
-                movieId: movieId,
-                points: points,
-                date: getNow()
-              }
-            })
+            try {
+              await upsertVote.mutation({
+                variables: {
+                  movieId: movieId,
+                  points: points,
+                  date: getNow(),
+                },
+              })
+            } catch (e) {
+              console.log("Login ก่อนนะถึงจะทำให้คะแนนบันทึกลงระบบได้จริงๆ")
+            }
 
             // [2] dealing with rating
             ReactGA.event({
               category: "Movie",
               action: `rating`,
-              value: points
+              value: points,
             })
           }}
         />
@@ -162,29 +183,29 @@ class RRating extends React.Component {
                 variables: {
                   id: uf[0].id,
                   star: false,
-                  starredSince: null
-                }
+                  starredSince: null,
+                },
               })
 
               // [1] assume user like the movie if point >= 5
               ReactGA.event({
                 category: "Movie",
                 action: `Remove star`,
-                value: movieId
+                value: movieId,
               })
             }
 
             /* ------- REMOVE RATING ----------- */
             await rmVote.mutation({
               variables: {
-                movieId: movieId
-              }
+                movieId: movieId,
+              },
             })
 
             ReactGA.event({
               category: "Movie",
               action: `rating`,
-              value: "NA"
+              value: "NA",
             })
           }}
         >

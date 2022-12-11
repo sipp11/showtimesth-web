@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import { adopt } from "react-adopt"
 
 const MOVIE_QUERY = gql`
-  query MOVIE_QUERY($movieId: Int!, $userId: Int) {
+  query MOVIE_QUERY($movieId: bigint!, $userId: Int) {
     movie_movie(where: { id: { _eq: $movieId } }) {
       id
       title
@@ -55,7 +55,7 @@ const MOVIE_QUERY = gql`
 
 const MOVIE_ADD_FAV = gql`
   mutation MOVIE_ADD_FAV(
-    $movieId: Int!
+    $movieId: bigint!
     $star: Boolean
     $starredSince: timestamptz
     $watched: Boolean
@@ -98,7 +98,7 @@ const addFav = ({ variables, render }) => (
 
 const MOVIE_STAR_UPDATE = gql`
   mutation MOVIE_STAR_UPDATE(
-    $id: Int!
+    $id: bigint!
     $star: Boolean
     $starredSince: timestamptz
   ) {
@@ -131,7 +131,7 @@ const starToggler = ({ variables, render }) => (
 
 const MOVIE_WATCH_UPDATE = gql`
   mutation MOVIE_WATCH_UPDATE(
-    $id: Int!
+    $id: bigint!
     $watched: Boolean
     $watchedSince: timestamptz
   ) {
@@ -163,7 +163,7 @@ const watchToggler = ({ variables, render }) => (
 )
 
 const MOVIE_ADD_VOTE = gql`
-  mutation MOVIE_ADD_VOTE($movieId: Int!, $date: date, $points: smallint!) {
+  mutation MOVIE_ADD_VOTE($movieId: bigint!, $date: date, $points: smallint!) {
     insert_people_movievote(
       objects: {
         movie_id: $movieId
@@ -197,7 +197,7 @@ const upsertVote = ({ variables, render }) => (
 )
 
 const MOVIE_RM_VOTE = gql`
-  mutation MOVIE_RM_VOTE($movieId: Int!) {
+  mutation MOVIE_RM_VOTE($movieId: bigint!) {
     delete_people_movievote(where: { movie_id: { _eq: $movieId } }) {
       affected_rows
     }

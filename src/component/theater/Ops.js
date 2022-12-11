@@ -7,7 +7,7 @@ import ReactGA from "react-ga"
 import styled from "styled-components"
 
 export const FAV_THEATER_AND_A_MOVIE = gql`
-  query FAV_THEATER_AND_A_MOVIE($userId: Int!, $movieId: Int!, $day: date) {
+  query FAV_THEATER_AND_A_MOVIE($userId: Int!, $movieId: bigint!, $day: date) {
     people_favtheater(
       where: { user_id: { _eq: $userId } }
       order_by: { theater: { english: asc } }
@@ -47,7 +47,7 @@ export const THEATERS_WITH_A_MOVIE = gql`
   query THEATERS_WITH_A_MOVIE(
     $offset: Int
     $limit: Int
-    $movieId: Int!
+    $movieId: bigint!
     $day: date
   ) {
     theater_theater(
@@ -100,7 +100,7 @@ export const NEARBY_THEATERS_AND_A_MOVIE = gql`
     $lon: float8!
     $offset: Int
     $limit: Int
-    $movieId: Int!
+    $movieId: bigint!
     $day: date
   ) {
     nearby_theaters(
@@ -138,7 +138,7 @@ export const nearbyTheatersAndAMovieTime = ({ variables, render }) => (
 )
 
 const THEATER_QUERY = gql`
-  query THEATER_QUERY($theaterId: Int!, $day: date) {
+  query THEATER_QUERY($theaterId: bigint!, $day: date) {
     theater_theater(where: { id: { _eq: $theaterId } }) {
       id
       slug
@@ -192,7 +192,7 @@ const THEATER_QUERY = gql`
 `
 
 const THEATER_ADD_FAV = gql`
-  mutation THEATER_ADD_FAV($theaterId: Int!) {
+  mutation THEATER_ADD_FAV($theaterId: bigint!) {
     insert_people_favtheater(
       objects: { theater_id: $theaterId }
       on_conflict: {
@@ -229,7 +229,7 @@ const addFav = ({ variables, render }) => {
 }
 
 const THEATER_UN_FAV = gql`
-  mutation THEATER_UN_FAV($id: Int!) {
+  mutation THEATER_UN_FAV($id: bigint!) {
     delete_people_favtheater(where: { id: { _eq: $id } }) {
       affected_rows
     }
