@@ -24,7 +24,7 @@
     "react-markdown": "^4.3.1",
     "react-rating": "^2.0.4",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "3.4.0",
+    "react-scripts": "3.4.4",
     "rsync": "^0.6.1",
     "serialize-javascript": "^3.1.0",
     "socket.io-client": "^2.2.0",
